@@ -1,13 +1,19 @@
 package org.gerdi.select.backend;
 
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
+import static spark.Spark.delete;
 import static spark.Spark.get;
 import static spark.Spark.halt;
 import static spark.Spark.port;
 import static spark.Spark.post;
+import static spark.Spark.put;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +38,7 @@ import com.mongodb.MongoException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.DeleteResult;
 
 public class Test {
 
@@ -42,8 +49,7 @@ public class Test {
 	private static final String MONGO_DB_DB_NAME = System.getenv().getOrDefault("SELECT_MONGODB_DB_NAME", "sparkTest");
 	private static final String MONGO_DB_HOSTNAME = System.getenv().getOrDefault("SELECT_MONGODB_DB_NAME", "10.1.45.1");
 
-	private static final String GERDI_ES_HOSTNAME = System.getenv().getOrDefault("GERDI_ES_HOSTNAME",
-			"localhost");
+	private static final String GERDI_ES_HOSTNAME = System.getenv().getOrDefault("GERDI_ES_HOSTNAME", "localhost");
 	private static final String GERDI_ES_INDEXNAME = System.getenv().getOrDefault("GERDI_ES_INDEXNAME", "gerdi");
 	private static final String GERDI_ES_TYPENAME = System.getenv().getOrDefault("GERDI_ES_TYPENAME", "metadata");
 	private static final RestHighLevelClient ES_CLIENT = new RestHighLevelClient(
@@ -74,61 +80,191 @@ public class Test {
 		// Init SparkJava
 		port(4567);
 
-		get("/collections/:userId", (req, res) -> {
-			res.type("application/json");
-			String userId = req.params("userId");
-			
+		// GET a list of collections of a specific user
+		get("/collections/:userId", (request, response) -> {
+			response.type("application/json");
+			String userId = request.params("userId");
+
 			BasicDBObject query = new BasicDBObject("userId", userId);
-			
+
 			FindIterable<Document> myCursor = collection.find(query);
-			List<Map<String,String>> collectionsList = new ArrayList<Map<String,String>>();
+			List<Map<String, String>> collectionsList = new ArrayList<Map<String, String>>();
 			for (Document doc : myCursor) {
 				HashMap<String, String> temp = new HashMap<String, String>();
 				temp.put("_id", doc.getObjectId("_id").toString());
 				temp.put("name", doc.getString("collectionName"));
 				collectionsList.add(temp);
 			}
-			String string = new Gson().toJson(collectionsList).toString();
-			return string;
+			return new Gson().toJson(collectionsList).toString();
 		});
-		
-		get("/docs/:collectionId", (req, res) -> {
-			res.type("application/json");
-			String collectionId = req.params("collectionId");
-			
-			BasicDBObject query = new BasicDBObject("_id", new ObjectId(collectionId));
-			FindIterable<Document> result = collection.find(query);
-			
-			if (result == null) return "[]";
+
+		// GET all documents within a collection
+		get("/collections/:userId/:collectionId", (request, response) -> {
+			response.type("application/json");
+			String userId = request.params("userId");
+			String collectionId = request.params("collectionId");
+
+			BasicDBObject queryId = new BasicDBObject("_id", new ObjectId(collectionId));
+			BasicDBObject queryUser = new BasicDBObject("userId", userId);
+			FindIterable<Document> result = collection.find(and(queryId, queryUser));
+
+			if (result.first() == null)
+				return "[]";
 
 			List<Map<String, Object>> docs = new ArrayList<Map<String, Object>>();
 			for (String doc : ((List<String>) result.first().get("docs"))) {
-				docs.add(retrieveDocFromElasticsearch(doc)); // TODO: check for empty docs!
+				docs.add(retrieveDoc(doc)); // TODO: check for empty docs!
 			}
 			return new Gson().toJson(docs).toString();
 		});
-		
-		post("/docs", (request, response) -> {
-			if (request.contentType() != "application/json") halt(405);
+
+		// Create a new collection
+		post("/collections/:userId", (request, response) -> {
+			response.type("application/json");
+			if (request.contentType() != "application/json")
+				halt(405);
+			String userId = request.params("userId");
 			JsonElement jelement = new JsonParser().parse(request.body());
 
-			Type listType = new TypeToken<List<String>>() {}.getType();
+			String collectionName = "";
+
+			if (jelement.getAsJsonObject().has("name")) {
+				collectionName = jelement.getAsJsonObject().getAsJsonPrimitive("name").getAsString();
+			}
+
+			if (collectionName == "")
+				collectionName = "Collection " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+
+			Type listType = new TypeToken<List<String>>() {
+			}.getType();
 			List<String> docsList = new Gson().fromJson(jelement.getAsJsonObject().getAsJsonArray("docs"), listType);
-			
-			Document document = new Document("userId", jelement.getAsJsonObject().getAsJsonPrimitive("userId").getAsString())
-		               .append("docs", docsList);
-			
+
+			List<String> failedDocs = new ArrayList<String>();
+
+			// Check whether the doc exists in our system
+			for (String doc : docsList) {
+				if (checkIfDocExists(doc) == false) {
+					failedDocs.add(doc);
+				}
+			}
+			if (!failedDocs.isEmpty()) {
+				response.status(400);
+				Message returnMsg = new Message("At least one document is unknown. Request was aborted.", failedDocs,
+						false);
+				return new Gson().toJson(returnMsg).toString();
+			}
+
+			Document document = new Document("userId", userId).append("docs", docsList).append("collectionName",
+					collectionName);
+
 			collection.insertOne(document);
+
+			response.status(201);
+			return new Gson().toJson(new Message("Collection created.", document.get("_id").toString(), true))
+					.toString();
+		});
+
+		// Update a collection
+		put("/collections/:userId/:collectionId", (request, response) -> {
+			response.type("application/json");
+			if (request.contentType() != "application/json")
+				halt(405);
+
+
+			String userId = request.params("userId");
+			String collectionId = request.params("collectionId");
 			
-//			System.out.println(jelement.getAsJsonObject().getAsJsonArray("docs").get(0));
-			return "";
+			JsonElement jelement = new JsonParser().parse(request.body());
+
+			String collectionName = "";
+
+			if (jelement.getAsJsonObject().has("name")) {
+				collectionName = jelement.getAsJsonObject().getAsJsonPrimitive("name").getAsString();
+			}
+
+			if (collectionName == "")
+				collectionName = "Collection " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+
+			Type listType = new TypeToken<List<String>>() {
+			}.getType();
+			List<String> docsList = new Gson().fromJson(jelement.getAsJsonObject().getAsJsonArray("docs"), listType);
+
+			List<String> failedDocs = new ArrayList<String>();
+
+			// Check whether the doc exists in our system
+			for (String doc : docsList) {
+				if (checkIfDocExists(doc) == false) {
+					failedDocs.add(doc);
+				}
+			}
+			if (!failedDocs.isEmpty()) {
+				response.status(400);
+				Message returnMsg = new Message("At least one document is unknown. Request was aborted.", failedDocs,
+						false);
+				return new Gson().toJson(returnMsg).toString();
+			}
+
+			Document document = new Document("userId", userId).append("docs", docsList).append("collectionName",
+					collectionName);
+
+			BasicDBObject queryId = new BasicDBObject("_id", new ObjectId(collectionId));
+			BasicDBObject queryUser = new BasicDBObject("userId", userId);
+
+			if (collection.find(and(queryId, queryUser)).first() != null) {
+				collection.updateOne(and(queryId, queryUser), new Document("$set", document));
+			} else {
+				collection.insertOne(document.append("_id", new ObjectId(collectionId)));
+				System.out.println("ADDED DOC " + document.get("_id").toString());
+			}
+
+			response.status(201);
+			return new Gson().toJson(new Message("Collection updated.", collectionId, true))
+					.toString();
+		});
+		
+		// DELETE a collection
+		delete("/collections/:userId/:collectionId", (request, response) -> {
+			response.type("application/json");
+			
+			String userId = request.params("userId");
+			String collectionId = request.params("collectionId");
+			
+			BasicDBObject query1 = new BasicDBObject("_id", new ObjectId(collectionId));
+			BasicDBObject query2 = new BasicDBObject("userId", userId);
+			DeleteResult result = collection.deleteOne(and(query1, query2));
+			
+			return new Gson().toJson(new Message(result.wasAcknowledged()))
+					.toString();
 		});
 
 	}
 
-	private static Map<String, Object> retrieveDocFromElasticsearch(String docId) throws IOException {
-		GetRequest getRequest = new GetRequest(GERDI_ES_INDEXNAME, GERDI_ES_TYPENAME,
-				docId);
+	/**
+	 * This method check whether or not a document exists in our system. The current
+	 * implementation checks if Elasticsearch holds such document, but this needs to
+	 * be changed once this service has an own persistance layer.
+	 * 
+	 * @param docId
+	 *            The ID of the document to be checked
+	 * @return true if the document exists, false otherwise
+	 * @throws IOException
+	 */
+	private static boolean checkIfDocExists(String docId) throws IOException {
+		GetRequest getRequest = new GetRequest(GERDI_ES_INDEXNAME, GERDI_ES_TYPENAME, docId);
+		return ES_CLIENT.get(getRequest).isExists();
+	}
+
+	
+	/**
+	 * This method retrieves a document and returns it in a specific format.
+	 * In the first version, we use the persistance capabilities of Elasticsearch. This method needs to be changed once a dedicated persistance layer exists.
+	 * 
+	 * @param docId The ID of the document to be retrieved
+	 * @return A Map containing the document id and the source data. The value of the source data may be null if no such document can be found.
+	 * @throws IOException
+	 */
+	private static Map<String, Object> retrieveDoc(String docId) throws IOException {
+		GetRequest getRequest = new GetRequest(GERDI_ES_INDEXNAME, GERDI_ES_TYPENAME, docId);
 		GetResponse getResponse = ES_CLIENT.get(getRequest);
 		Map<String, Object> retVal = new HashMap<String, Object>();
 		retVal.put("_source", getResponse.getSource());
