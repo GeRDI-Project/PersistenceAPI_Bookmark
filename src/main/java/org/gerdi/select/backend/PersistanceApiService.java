@@ -1,7 +1,6 @@
 package org.gerdi.select.backend;
 
 import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.eq;
 import static spark.Spark.delete;
 import static spark.Spark.get;
 import static spark.Spark.halt;
@@ -34,35 +33,52 @@ import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoCredential;
 import com.mongodb.MongoException;
+import com.mongodb.ServerAddress;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 
-public class Test {
+public class PersistanceApiService {
 
+	// MongoDB Constants
 	private static final int MONGO_DB_PORT = Integer
 			.parseInt(System.getenv().getOrDefault("SELECT_MONGODB_PORT", "27017"));
 	private static final String MONGO_DB_COLLECTION_NAME = System.getenv()
-			.getOrDefault("SELECT_MONGODB_COLLECTION_NAME", "testCollection");
-	private static final String MONGO_DB_DB_NAME = System.getenv().getOrDefault("SELECT_MONGODB_DB_NAME", "sparkTest");
-	private static final String MONGO_DB_HOSTNAME = System.getenv().getOrDefault("SELECT_MONGODB_DB_NAME", "10.1.45.1");
+			.getOrDefault("SELECT_MONGODB_COLLECTION_NAME", "collections");
+	private static final String MONGO_DB_DB_NAME = System.getenv().getOrDefault("SELECT_MONGODB_DB_NAME", "select");
+	private static final String MONGO_DB_HOSTNAME = System.getenv().getOrDefault("SELECT_MONGODB_DB_HOSTNAME", "localhost");
+	private static final String MONGO_DB_ADMIN_DB_NAME = System.getenv().getOrDefault("SELECT_MONGODB_ADMIN_DB_NAME", "admin");
+	private static final String MONGO_DB_USER = System.getenv().getOrDefault("SELECT_MONGODB_ADMIN_DB_NAME", "admin");
+	private static final String MONGO_DB_PASSWORD = System.getenv().getOrDefault("SELECT_MONGODB_ADMIN_DB_NAME", "");
+	private static final MongoCredential MONGO_DB_CREDENTIAL = MongoCredential.createCredential(MONGO_DB_USER, MONGO_DB_ADMIN_DB_NAME, MONGO_DB_PASSWORD.toCharArray());
 
+	
+	// Elasticsearch Constants
 	private static final String GERDI_ES_HOSTNAME = System.getenv().getOrDefault("GERDI_ES_HOSTNAME", "localhost");
 	private static final String GERDI_ES_INDEXNAME = System.getenv().getOrDefault("GERDI_ES_INDEXNAME", "gerdi");
 	private static final String GERDI_ES_TYPENAME = System.getenv().getOrDefault("GERDI_ES_TYPENAME", "metadata");
+//	private static final int GERDI_ES_PORT = Integer
+//			.parseInt(System.getenv().getOrDefault("GERDI_ES_PORT", "9200"));
+	
 	private static final RestHighLevelClient ES_CLIENT = new RestHighLevelClient(
 			RestClient.builder(new HttpHost(GERDI_ES_HOSTNAME, 9200, "http")));
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Test.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PersistanceApiService.class);
 
 	public static void main(String[] args) {
 
 		// Init MongoDB Connection
 		MongoClient mongoClient;
 		try {
-			mongoClient = new MongoClient(MONGO_DB_HOSTNAME, MONGO_DB_PORT);
+			if (MONGO_DB_PASSWORD == "") {
+				mongoClient = new MongoClient(MONGO_DB_HOSTNAME, MONGO_DB_PORT);
+			} else {
+				mongoClient = new MongoClient(new ServerAddress(MONGO_DB_HOSTNAME, MONGO_DB_PORT), MONGO_DB_CREDENTIAL, MongoClientOptions.builder().build());
+			}
 		} catch (Exception e) {
 			LOGGER.error("Failed to connect to MongoDB at " + MONGO_DB_HOSTNAME + ":" + MONGO_DB_PORT, e);
 			return;
@@ -214,7 +230,6 @@ public class Test {
 				collection.updateOne(and(queryId, queryUser), new Document("$set", document));
 			} else {
 				collection.insertOne(document.append("_id", new ObjectId(collectionId)));
-				System.out.println("ADDED DOC " + document.get("_id").toString());
 			}
 
 			response.status(201);
@@ -233,6 +248,7 @@ public class Test {
 			BasicDBObject query2 = new BasicDBObject("userId", userId);
 			DeleteResult result = collection.deleteOne(and(query1, query2));
 			
+			response.status(202);
 			return new Gson().toJson(new Message(result.wasAcknowledged()))
 					.toString();
 		});
