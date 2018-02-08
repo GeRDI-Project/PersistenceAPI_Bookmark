@@ -15,4 +15,4 @@ include 'api'
 include 'services:webservice'
 */
 
-rootProject.name = 'select-backend-api'
+rootProject.name = 'bookmark-persistance-api'

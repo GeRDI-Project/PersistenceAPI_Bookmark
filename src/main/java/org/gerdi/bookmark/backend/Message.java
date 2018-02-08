@@ -1,4 +1,4 @@
-package org.gerdi.select.backend;
+package org.gerdi.bookmark.backend;
 
 import java.util.List;
 
