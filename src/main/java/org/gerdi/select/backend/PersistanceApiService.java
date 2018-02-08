@@ -52,8 +52,8 @@ public class PersistanceApiService {
 	private static final String MONGO_DB_DB_NAME = System.getenv().getOrDefault("SELECT_MONGODB_DB_NAME", "select");
 	private static final String MONGO_DB_HOSTNAME = System.getenv().getOrDefault("SELECT_MONGODB_DB_HOSTNAME", "localhost");
 	private static final String MONGO_DB_ADMIN_DB_NAME = System.getenv().getOrDefault("SELECT_MONGODB_ADMIN_DB_NAME", "admin");
-	private static final String MONGO_DB_USER = System.getenv().getOrDefault("SELECT_MONGODB_ADMIN_DB_NAME", "admin");
-	private static final String MONGO_DB_PASSWORD = System.getenv().getOrDefault("SELECT_MONGODB_ADMIN_DB_NAME", "");
+	private static final String MONGO_DB_USER = System.getenv().getOrDefault("SELECT_MONGODB_USER_NAME", "admin");
+	private static final String MONGO_DB_PASSWORD = System.getenv().getOrDefault("SELECT_MONGODB_PASSWORD", "");
 	private static final MongoCredential MONGO_DB_CREDENTIAL = MongoCredential.createCredential(MONGO_DB_USER, MONGO_DB_ADMIN_DB_NAME, MONGO_DB_PASSWORD.toCharArray());
 
 	

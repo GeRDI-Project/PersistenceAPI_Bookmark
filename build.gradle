@@ -7,7 +7,7 @@
  */
 
 // Apply the java-library plugin to add support for Java Library
-apply plugin: 'java-library'
+apply plugin: 'java'
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -17,8 +17,6 @@ repositories {
 }
 
 dependencies {
-    // This dependency is exported to consumers, that is to say found on their compile classpath.
-    api 'org.apache.commons:commons-math3:3.6.1'
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation 'com.google.guava:guava:21.0'
@@ -46,3 +44,13 @@ dependencies {
     
 }
 
+jar {
+	manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+        			'Main-Class': 'org.gerdi.select.backend.PersistanceApiService'
+    }
+    doFirst {
+        from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } } 
+    }
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA' 
+}
