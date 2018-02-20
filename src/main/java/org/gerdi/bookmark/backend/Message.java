@@ -13,7 +13,7 @@ public class Message {
 		this.message = message;
 	}
 	
-	Message(boolean acknowledged) {
+	public Message(boolean acknowledged) {
 		this.acknowledged = acknowledged;
 	}
 
@@ -32,12 +32,12 @@ public class Message {
 		this.setAcknowledged(acknowledged);
 	}
 	
-	Message(String message, List<String> docs, boolean acknowledged) {
+	public Message(String message, List<String> docs, boolean acknowledged) {
 		this(message, docs);
 		this.setAcknowledged(acknowledged);
 	}
 	
-	Message(String message, String collectionId, boolean acknowledged) {
+	public Message(String message, String collectionId, boolean acknowledged) {
 		this(message, collectionId);
 		this.setAcknowledged(acknowledged);
 	}
