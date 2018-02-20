@@ -18,7 +18,13 @@ import com.mongodb.client.MongoCollection;
 import spark.Request;
 import spark.Response;
 
-public final class GetDocuments extends AbstractBookmarkRoute{
+/**
+ * This class implements the handler for document retrieval.
+ * 
+ * @author Nelson Tavares de Sousa
+ *
+ */
+public final class GetDocuments extends AbstractBookmarkRoute {
 
 	public GetDocuments(MongoCollection<Document> collection) {
 		super(collection);

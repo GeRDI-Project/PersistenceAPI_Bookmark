@@ -24,11 +24,16 @@ import com.mongodb.client.MongoCollection;
 import spark.Request;
 import spark.Response;
 
+/**
+ * This class implements the handler for collection updates.
+ * 
+ * @author Nelson Tavares de Sousa
+ *
+ */
 public final class PutCollection extends AbstractBookmarkRoute {
 
 	public PutCollection(MongoCollection<Document> collection) {
 		super(collection);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -37,10 +42,9 @@ public final class PutCollection extends AbstractBookmarkRoute {
 		if (request.contentType() != "application/json")
 			halt(405);
 
-
 		String userId = request.params("userId");
 		String collectionId = request.params("collectionId");
-		
+
 		JsonElement jelement = new JsonParser().parse(request.body());
 
 		String collectionName = "";
@@ -49,7 +53,7 @@ public final class PutCollection extends AbstractBookmarkRoute {
 			collectionName = jelement.getAsJsonObject().getAsJsonPrimitive("name").getAsString();
 		}
 
-		// TODO: check if 
+		// TODO: check if
 		if (collectionName == "")
 			collectionName = "Collection " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 
@@ -85,8 +89,7 @@ public final class PutCollection extends AbstractBookmarkRoute {
 		}
 
 		response.status(201);
-		return new Gson().toJson(new Message("Collection updated.", collectionId, true))
-				.toString();
+		return new Gson().toJson(new Message("Collection updated.", collectionId, true)).toString();
 	}
 
 }

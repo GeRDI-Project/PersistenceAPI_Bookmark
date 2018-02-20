@@ -21,11 +21,16 @@ import com.mongodb.client.MongoCollection;
 import spark.Request;
 import spark.Response;
 
+/**
+ * This class implements the handler for collection creation.
+ * 
+ * @author Nelson Tavares de Sousa
+ *
+ */
 public class PostCollection extends AbstractBookmarkRoute {
 
 	public PostCollection(MongoCollection<Document> collection) {
 		super(collection);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -70,8 +75,7 @@ public class PostCollection extends AbstractBookmarkRoute {
 		collection.insertOne(document);
 
 		response.status(201);
-		return new Gson().toJson(new Message("Collection created.", document.get("_id").toString(), true))
-				.toString();
+		return new Gson().toJson(new Message("Collection created.", document.get("_id").toString(), true)).toString();
 	}
 
 }

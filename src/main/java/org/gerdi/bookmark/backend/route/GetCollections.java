@@ -15,11 +15,16 @@ import com.mongodb.client.MongoCollection;
 import spark.Request;
 import spark.Response;
 
+/**
+ * This class implements the handler for collection retrieval.
+ * 
+ * @author Nelson Tavares de Sousa
+ *
+ */
 public class GetCollections extends AbstractBookmarkRoute {
 
 	public GetCollections(MongoCollection<Document> collection) {
 		super(collection);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

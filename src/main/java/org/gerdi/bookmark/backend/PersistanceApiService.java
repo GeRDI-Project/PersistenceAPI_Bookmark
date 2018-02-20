@@ -22,6 +22,12 @@ import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
+/**
+ * This class initializes the involved middleware and all REST paths.
+ * 
+ * @author Nelson Tavares de Sousa
+ *
+ */
 public class PersistanceApiService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PersistanceApiService.class);
@@ -32,12 +38,17 @@ public class PersistanceApiService {
 		MongoClient mongoClient;
 		try {
 			if (BookmarkPersistanceConstants.MONGO_DB_PASSWORD == "") {
-				mongoClient = new MongoClient(BookmarkPersistanceConstants.MONGO_DB_HOSTNAME, BookmarkPersistanceConstants.MONGO_DB_PORT);
+				mongoClient = new MongoClient(BookmarkPersistanceConstants.MONGO_DB_HOSTNAME,
+						BookmarkPersistanceConstants.MONGO_DB_PORT);
 			} else {
-				mongoClient = new MongoClient(new ServerAddress(BookmarkPersistanceConstants.MONGO_DB_HOSTNAME, BookmarkPersistanceConstants.MONGO_DB_PORT), BookmarkPersistanceConstants.MONGO_DB_CREDENTIAL, MongoClientOptions.builder().build());
+				mongoClient = new MongoClient(
+						new ServerAddress(BookmarkPersistanceConstants.MONGO_DB_HOSTNAME,
+								BookmarkPersistanceConstants.MONGO_DB_PORT),
+						BookmarkPersistanceConstants.MONGO_DB_CREDENTIAL, MongoClientOptions.builder().build());
 			}
 		} catch (Exception e) {
-			LOGGER.error("Failed to connect to MongoDB at " + BookmarkPersistanceConstants.MONGO_DB_HOSTNAME + ":" + BookmarkPersistanceConstants.MONGO_DB_PORT, e);
+			LOGGER.error("Failed to connect to MongoDB at " + BookmarkPersistanceConstants.MONGO_DB_HOSTNAME + ":"
+					+ BookmarkPersistanceConstants.MONGO_DB_PORT, e);
 			return;
 		}
 		MongoDatabase db = mongoClient.getDatabase(BookmarkPersistanceConstants.MONGO_DB_DB_NAME);
@@ -47,7 +58,8 @@ public class PersistanceApiService {
 			// Try to connect to MongoDB
 			db.listCollectionNames();
 		} catch (MongoException e) {
-			LOGGER.error("Failed to connect to MongoDB at " + BookmarkPersistanceConstants.MONGO_DB_HOSTNAME + ":" + BookmarkPersistanceConstants.MONGO_DB_PORT, e);
+			LOGGER.error("Failed to connect to MongoDB at " + BookmarkPersistanceConstants.MONGO_DB_HOSTNAME + ":"
+					+ BookmarkPersistanceConstants.MONGO_DB_PORT, e);
 		}
 
 		// Init SparkJava
@@ -64,12 +76,10 @@ public class PersistanceApiService {
 
 		// Update a collection
 		put("/collections/:userId/:collectionId", new PutCollection(collection));
-		
+
 		// DELETE a collection
 		delete("/collections/:userId/:collectionId", new DeleteCollection(collection));
 
 	}
-
-
 
 }

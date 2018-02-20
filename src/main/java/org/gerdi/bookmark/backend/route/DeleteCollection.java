@@ -14,27 +14,31 @@ import com.mongodb.client.result.DeleteResult;
 import spark.Request;
 import spark.Response;
 
+/**
+ * This class implements the handler for collection deletion.
+ * 
+ * @author Nelson Tavares de Sousa
+ *
+ */
 public final class DeleteCollection extends AbstractBookmarkRoute {
 
 	public DeleteCollection(MongoCollection<Document> collection) {
 		super(collection);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public Object handle(Request request, Response response) throws Exception {
 		response.type("application/json");
-		
+
 		String userId = request.params("userId");
 		String collectionId = request.params("collectionId");
-		
+
 		BasicDBObject query1 = new BasicDBObject("_id", new ObjectId(collectionId));
 		BasicDBObject query2 = new BasicDBObject("userId", userId);
 		DeleteResult result = collection.deleteOne(and(query1, query2));
-		
+
 		response.status(202);
-		return new Gson().toJson(new Message(result.wasAcknowledged()))
-				.toString();
+		return new Gson().toJson(new Message(result.wasAcknowledged())).toString();
 	}
 
 }
