@@ -8,7 +8,7 @@ import java.util.List;
  * @author Nelson Tavares de Sousa
  *
  */
-public class Message {
+public final class Message {
 
 	private String message;
 	private List<String> docs;

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.bson.Document;
+import org.gerdi.bookmark.backend.BookmarkPersistanceConstants;
 
 import com.google.gson.Gson;
 import com.mongodb.BasicDBObject;
@@ -29,17 +30,17 @@ public class GetCollections extends AbstractBookmarkRoute {
 
 	@Override
 	public Object handle(Request request, Response response) throws Exception {
-		response.type("application/json");
-		String userId = request.params("userId");
+		response.type(BookmarkPersistanceConstants.APPLICATION_JSON);
+		String userId = request.params(BookmarkPersistanceConstants.PARAM_USER_ID_NAME);
 
-		BasicDBObject query = new BasicDBObject("userId", userId);
+		BasicDBObject query = new BasicDBObject(BookmarkPersistanceConstants.DB_USER_ID_FIELD_NAME, userId);
 
 		FindIterable<Document> myCursor = collection.find(query);
 		List<Map<String, String>> collectionsList = new ArrayList<Map<String, String>>();
 		for (Document doc : myCursor) {
 			HashMap<String, String> temp = new HashMap<String, String>();
 			temp.put("_id", doc.getObjectId("_id").toString());
-			temp.put("name", doc.getString("collectionName"));
+			temp.put("name", doc.getString(BookmarkPersistanceConstants.DB_COLLECTION_FIELD_NAME));
 			collectionsList.add(temp);
 		}
 		return new Gson().toJson(collectionsList).toString();

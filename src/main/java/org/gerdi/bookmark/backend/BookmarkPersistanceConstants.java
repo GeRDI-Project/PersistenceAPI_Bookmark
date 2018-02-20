@@ -1,5 +1,7 @@
 package org.gerdi.bookmark.backend;
 
+import java.text.SimpleDateFormat;
+
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -33,5 +35,19 @@ public final class BookmarkPersistanceConstants {
 	static final String GERDI_ES_TYPENAME = System.getenv().getOrDefault("GERDI_ES_TYPENAME", "metadata");
 	static final RestHighLevelClient ES_CLIENT = new RestHighLevelClient(
 			RestClient.builder(new HttpHost(GERDI_ES_HOSTNAME, 9200, "http")));
+	
+	// Other stuff
+	public static final String APPLICATION_JSON = "application/json";
+	public static final SimpleDateFormat DATE_STRING = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	public static final String PATH_PREFIX = "/collections";
+
+	// MongoDB Field Names
+	public static final String DB_COLLECTION_FIELD_NAME = "collectionName";
+	public static final String DB_USER_ID_FIELD_NAME = "userId";
+	public static final String DB_DOCS_FIELD_NAME = "docs";
+	
+	// Param Constants
+	public static final String PARAM_USER_ID_NAME = "userId";
+	public static final String PARAM_COLLECTION_NAME = "collectionId";
 
 }

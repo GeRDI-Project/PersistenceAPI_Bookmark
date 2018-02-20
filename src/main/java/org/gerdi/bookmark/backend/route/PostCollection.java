@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.bson.Document;
+import org.gerdi.bookmark.backend.BookmarkPersistanceConstants;
 import org.gerdi.bookmark.backend.DocumentUtils;
 import org.gerdi.bookmark.backend.Message;
 
@@ -35,24 +36,25 @@ public class PostCollection extends AbstractBookmarkRoute {
 
 	@Override
 	public Object handle(Request request, Response response) throws Exception {
-		response.type("application/json");
-		if (request.contentType() != "application/json")
+		response.type(BookmarkPersistanceConstants.APPLICATION_JSON);
+		if (request.contentType() != BookmarkPersistanceConstants.APPLICATION_JSON)
 			halt(405);
-		String userId = request.params("userId");
-		JsonElement jelement = new JsonParser().parse(request.body());
+		String userId = request.params(BookmarkPersistanceConstants.PARAM_USER_ID_NAME);
+		JsonElement requestBody = new JsonParser().parse(request.body());
 
 		String collectionName = "";
 
-		if (jelement.getAsJsonObject().has("name")) {
-			collectionName = jelement.getAsJsonObject().getAsJsonPrimitive("name").getAsString();
+		if (requestBody.getAsJsonObject().has("name")) {
+			collectionName = requestBody.getAsJsonObject().getAsJsonPrimitive("name").getAsString();
 		}
 
-		if (collectionName == "")
-			collectionName = "Collection " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+		if (collectionName.isEmpty()) {
+			collectionName = "Collection " + BookmarkPersistanceConstants.DATE_STRING.format(new Date());
+		}
 
 		Type listType = new TypeToken<List<String>>() {
 		}.getType();
-		List<String> docsList = new Gson().fromJson(jelement.getAsJsonObject().getAsJsonArray("docs"), listType);
+		List<String> docsList = new Gson().fromJson(requestBody.getAsJsonObject().getAsJsonArray("docs"), listType);
 
 		List<String> failedDocs = new ArrayList<String>();
 
@@ -69,8 +71,8 @@ public class PostCollection extends AbstractBookmarkRoute {
 			return new Gson().toJson(returnMsg).toString();
 		}
 
-		Document document = new Document("userId", userId).append("docs", docsList).append("collectionName",
-				collectionName);
+		Document document = new Document(BookmarkPersistanceConstants.DB_USER_ID_FIELD_NAME, userId)
+				.append(BookmarkPersistanceConstants.DB_DOCS_FIELD_NAME, docsList).append(BookmarkPersistanceConstants.DB_COLLECTION_FIELD_NAME, collectionName);
 
 		collection.insertOne(document);
 

@@ -4,13 +4,13 @@ import static com.mongodb.client.model.Filters.and;
 import static spark.Spark.halt;
 
 import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.gerdi.bookmark.backend.BookmarkPersistanceConstants;
 import org.gerdi.bookmark.backend.DocumentUtils;
 import org.gerdi.bookmark.backend.Message;
 
@@ -38,28 +38,28 @@ public final class PutCollection extends AbstractBookmarkRoute {
 
 	@Override
 	public Object handle(Request request, Response response) throws Exception {
-		response.type("application/json");
-		if (request.contentType() != "application/json")
+		response.type(BookmarkPersistanceConstants.APPLICATION_JSON);
+		if (request.contentType() != BookmarkPersistanceConstants.APPLICATION_JSON)
 			halt(405);
 
-		String userId = request.params("userId");
-		String collectionId = request.params("collectionId");
+		String userId = request.params(BookmarkPersistanceConstants.PARAM_USER_ID_NAME);
+		String collectionId = request.params(BookmarkPersistanceConstants.PARAM_COLLECTION_NAME);
 
-		JsonElement jelement = new JsonParser().parse(request.body());
+		JsonElement requestBody = new JsonParser().parse(request.body());
 
 		String collectionName = "";
 
-		if (jelement.getAsJsonObject().has("name")) {
-			collectionName = jelement.getAsJsonObject().getAsJsonPrimitive("name").getAsString();
+		if (requestBody.getAsJsonObject().has("name")) {
+			collectionName = requestBody.getAsJsonObject().getAsJsonPrimitive("name").getAsString();
 		}
 
-		// TODO: check if
-		if (collectionName == "")
-			collectionName = "Collection " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+		// TODO: check if collection exists... don't overwrite name, if empty string
+		if (collectionName.isEmpty())
+			collectionName = "Collection " + BookmarkPersistanceConstants.DATE_STRING.format(new Date());
 
 		Type listType = new TypeToken<List<String>>() {
 		}.getType();
-		List<String> docsList = new Gson().fromJson(jelement.getAsJsonObject().getAsJsonArray("docs"), listType);
+		List<String> docsList = new Gson().fromJson(requestBody.getAsJsonObject().getAsJsonArray("docs"), listType);
 
 		List<String> failedDocs = new ArrayList<String>();
 
@@ -76,11 +76,12 @@ public final class PutCollection extends AbstractBookmarkRoute {
 			return new Gson().toJson(returnMsg).toString();
 		}
 
-		Document document = new Document("userId", userId).append("docs", docsList).append("collectionName",
-				collectionName);
+		Document document = new Document(BookmarkPersistanceConstants.DB_USER_ID_FIELD_NAME, userId)
+				.append(BookmarkPersistanceConstants.DB_DOCS_FIELD_NAME, docsList)
+				.append(BookmarkPersistanceConstants.DB_COLLECTION_FIELD_NAME, collectionName);
 
 		BasicDBObject queryId = new BasicDBObject("_id", new ObjectId(collectionId));
-		BasicDBObject queryUser = new BasicDBObject("userId", userId);
+		BasicDBObject queryUser = new BasicDBObject(BookmarkPersistanceConstants.DB_USER_ID_FIELD_NAME, userId);
 
 		if (collection.find(and(queryId, queryUser)).first() != null) {
 			collection.updateOne(and(queryId, queryUser), new Document("$set", document));

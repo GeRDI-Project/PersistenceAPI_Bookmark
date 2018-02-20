@@ -4,6 +4,7 @@ import static com.mongodb.client.model.Filters.and;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.gerdi.bookmark.backend.BookmarkPersistanceConstants;
 import org.gerdi.bookmark.backend.Message;
 
 import com.google.gson.Gson;
@@ -28,13 +29,13 @@ public final class DeleteCollection extends AbstractBookmarkRoute {
 
 	@Override
 	public Object handle(Request request, Response response) throws Exception {
-		response.type("application/json");
+		response.type(BookmarkPersistanceConstants.APPLICATION_JSON);
 
-		String userId = request.params("userId");
-		String collectionId = request.params("collectionId");
+		String userId = request.params(BookmarkPersistanceConstants.PARAM_USER_ID_NAME);
+		String collectionId = request.params(BookmarkPersistanceConstants.PARAM_COLLECTION_NAME);
 
 		BasicDBObject query1 = new BasicDBObject("_id", new ObjectId(collectionId));
-		BasicDBObject query2 = new BasicDBObject("userId", userId);
+		BasicDBObject query2 = new BasicDBObject(BookmarkPersistanceConstants.DB_USER_ID_FIELD_NAME, userId);
 		DeleteResult result = collection.deleteOne(and(query1, query2));
 
 		response.status(202);
