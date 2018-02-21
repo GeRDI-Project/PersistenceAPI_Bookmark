@@ -8,16 +8,18 @@ import spark.Route;
 
 /**
  * This abstract class introduces a minimal framework for the needed routes.
- * 
+ *
  * @author Nelson Tavares de Sousa
  *
  */
-public abstract class AbstractBookmarkRoute implements Route {
+public abstract class AbstractBookmarkRoute implements Route
+{
 
-	protected final MongoCollection<Document> collection;
+    protected final MongoCollection<Document> collection;
 
-	public AbstractBookmarkRoute(final MongoCollection<Document> collection) {
-		this.collection = collection;
-	}
+    public AbstractBookmarkRoute(final MongoCollection<Document> collection)
+    {
+        this.collection = collection;
+    }
 
 }
