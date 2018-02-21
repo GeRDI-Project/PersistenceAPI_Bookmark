@@ -18,27 +18,27 @@ import spark.Response;
 
 /**
  * This class implements the handler for collection retrieval.
- * 
+ *
  * @author Nelson Tavares de Sousa
  *
  */
 public class GetCollections extends AbstractBookmarkRoute {
 
-	public GetCollections(MongoCollection<Document> collection) {
+	public GetCollections(final MongoCollection<Document> collection) {
 		super(collection);
 	}
 
 	@Override
-	public Object handle(Request request, Response response) throws Exception {
+	public Object handle(final Request request, final Response response) {
 		response.type(BookmarkPersistanceConstants.APPLICATION_JSON);
-		String userId = request.params(BookmarkPersistanceConstants.PARAM_USER_ID_NAME);
+		final String userId = request.params(BookmarkPersistanceConstants.PARAM_USER_ID_NAME);
 
-		BasicDBObject query = new BasicDBObject(BookmarkPersistanceConstants.DB_USER_ID_FIELD_NAME, userId);
+		final BasicDBObject query = new BasicDBObject(BookmarkPersistanceConstants.DB_USER_ID_FIELD_NAME, userId);
 
-		FindIterable<Document> myCursor = collection.find(query);
-		List<Map<String, String>> collectionsList = new ArrayList<Map<String, String>>();
-		for (Document doc : myCursor) {
-			HashMap<String, String> temp = new HashMap<String, String>();
+		final FindIterable<Document> myCursor = collection.find(query);
+		final List<Map<String, String>> collectionsList = new ArrayList<>();
+		for (final Document doc : myCursor) {
+			final HashMap<String, String> temp = new HashMap<>();
 			temp.put("_id", doc.getObjectId("_id").toString());
 			temp.put("name", doc.getString(BookmarkPersistanceConstants.DB_COLLECTION_FIELD_NAME));
 			collectionsList.add(temp);

@@ -33,28 +33,20 @@ public class PersistanceApiService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PersistanceApiService.class);
 
 	@SuppressWarnings("resource")
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 
 		// Init MongoDB Connection
 		final MongoClient mongoClient;
-		try {
-			if (BookmarkPersistanceConstants.MONGO_DB_PASSWORD == "") {
-				mongoClient = new MongoClient(BookmarkPersistanceConstants.MONGO_DB_HOSTNAME,
-						BookmarkPersistanceConstants.MONGO_DB_PORT);
-			} else {
-				mongoClient = new MongoClient(
-						new ServerAddress(BookmarkPersistanceConstants.MONGO_DB_HOSTNAME,
-								BookmarkPersistanceConstants.MONGO_DB_PORT),
-						BookmarkPersistanceConstants.MONGO_DB_CREDENTIAL, MongoClientOptions.builder().build());
-			}
-		} catch (Exception e) {
-			LOGGER.error("Failed to connect to MongoDB at " + BookmarkPersistanceConstants.MONGO_DB_HOSTNAME + ":"
-					+ BookmarkPersistanceConstants.MONGO_DB_PORT, e);
-			throw e;
+		if ("".equals(BookmarkPersistanceConstants.MONGO_DB_PASSWORD)) {
+			mongoClient = new MongoClient(BookmarkPersistanceConstants.MONGO_DB_HOSTNAME,
+					BookmarkPersistanceConstants.MONGO_DB_PORT);
+		} else {
+			mongoClient = new MongoClient(
+					new ServerAddress(BookmarkPersistanceConstants.MONGO_DB_HOSTNAME,
+							BookmarkPersistanceConstants.MONGO_DB_PORT),
+					BookmarkPersistanceConstants.MONGO_DB_CREDENTIAL, MongoClientOptions.builder().build());
 		}
 		final MongoDatabase db = mongoClient.getDatabase(BookmarkPersistanceConstants.MONGO_DB_DB_NAME);
-		final MongoCollection<Document> collection = db.getCollection(BookmarkPersistanceConstants.MONGO_DB_COLLECTION_NAME);
-
 		try {
 			// Try to connect to MongoDB
 			db.listCollectionNames();
@@ -63,6 +55,8 @@ public class PersistanceApiService {
 					+ BookmarkPersistanceConstants.MONGO_DB_PORT, e);
 			throw e;
 		}
+		final MongoCollection<Document> collection = db
+				.getCollection(BookmarkPersistanceConstants.MONGO_DB_COLLECTION_NAME);
 
 		// Init SparkJava
 		port(4567);

@@ -23,8 +23,8 @@ public class DocumentUtils {
 	 * @return true if the document exists, false otherwise
 	 * @throws IOException
 	 */
-	public static boolean checkIfDocExists(String docId) throws IOException {
-		GetRequest getRequest = new GetRequest(BookmarkPersistanceConstants.GERDI_ES_INDEXNAME,
+	public static boolean checkIfDocExists(final String docId) throws IOException {
+		final GetRequest getRequest = new GetRequest(BookmarkPersistanceConstants.GERDI_ES_INDEXNAME,
 				BookmarkPersistanceConstants.GERDI_ES_TYPENAME, docId);
 		return BookmarkPersistanceConstants.ES_CLIENT.get(getRequest).isExists();
 	}
@@ -38,11 +38,11 @@ public class DocumentUtils {
 	 *         the source data may be null if no such document can be found.
 	 * @throws IOException
 	 */
-	public static Map<String, Object> retrieveDoc(String docId) throws IOException {
-		GetRequest getRequest = new GetRequest(BookmarkPersistanceConstants.GERDI_ES_INDEXNAME,
+	public static Map<String, Object> retrieveDoc(final String docId) throws IOException {
+		final GetRequest getRequest = new GetRequest(BookmarkPersistanceConstants.GERDI_ES_INDEXNAME,
 				BookmarkPersistanceConstants.GERDI_ES_TYPENAME, docId);
-		GetResponse getResponse = BookmarkPersistanceConstants.ES_CLIENT.get(getRequest);
-		Map<String, Object> retVal = new HashMap<String, Object>();
+		final GetResponse getResponse = BookmarkPersistanceConstants.ES_CLIENT.get(getRequest);
+		final Map<String, Object> retVal = new HashMap<String, Object>();
 		retVal.put("_source", getResponse.getSource());
 		retVal.put("_id", docId);
 		return retVal;
