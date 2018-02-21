@@ -10,7 +10,7 @@ import java.util.Map;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.gerdi.bookmark.backend.BookmarkPersistanceConstants;
-import org.gerdi.bookmark.backend.DocumentUtils;
+import org.gerdi.bookmark.backend.DocumentUtility;
 
 import com.google.gson.Gson;
 import com.mongodb.BasicDBObject;
@@ -49,7 +49,7 @@ public final class GetDocuments extends AbstractBookmarkRoute {
 
 		final List<Map<String, Object>> docs = new ArrayList<>();
 		for (final String doc : ((List<String>) result.first().get(BookmarkPersistanceConstants.DB_DOCS_FIELD_NAME))) {
-			docs.add(DocumentUtils.retrieveDoc(doc));
+			docs.add(DocumentUtility.retrieveDoc(doc));
 		}
 		return new Gson().toJson(docs).toString();
 	}

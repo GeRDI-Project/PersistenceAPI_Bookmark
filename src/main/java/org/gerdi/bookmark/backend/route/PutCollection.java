@@ -14,7 +14,7 @@ import java.util.Locale;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.gerdi.bookmark.backend.BookmarkPersistanceConstants;
-import org.gerdi.bookmark.backend.DocumentUtils;
+import org.gerdi.bookmark.backend.DocumentUtility;
 import org.gerdi.bookmark.backend.Message;
 
 import com.google.gson.Gson;
@@ -72,7 +72,7 @@ public final class PutCollection extends AbstractBookmarkRoute {
 
 		// Check whether the doc exists in our system
 		for (final String doc : docsList) {
-			if (!DocumentUtils.checkIfDocExists(doc)) {
+			if (!DocumentUtility.checkIfDocExists(doc)) {
 				failedDocs.add(doc);
 			}
 		}
@@ -90,10 +90,10 @@ public final class PutCollection extends AbstractBookmarkRoute {
 		final BasicDBObject queryId = new BasicDBObject("_id", new ObjectId(collectionId));
 		final BasicDBObject queryUser = new BasicDBObject(BookmarkPersistanceConstants.DB_USER_ID_FIELD_NAME, userId);
 
-		if (collection.find(and(queryId, queryUser)).first() != null) {
-			collection.updateOne(and(queryId, queryUser), new Document("$set", document));
-		} else {
+		if (collection.find(and(queryId, queryUser)).first() == null) {
 			collection.insertOne(document.append("_id", new ObjectId(collectionId)));
+		} else {
+			collection.updateOne(and(queryId, queryUser), new Document("$set", document));
 		}
 
 		response.status(201);

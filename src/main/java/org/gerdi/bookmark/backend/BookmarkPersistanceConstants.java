@@ -12,6 +12,7 @@ import com.mongodb.MongoCredential;
  * @author Nelson Tavares de Sousa
  *
  */
+@SuppressWarnings("PMD.LongVariable")
 public final class BookmarkPersistanceConstants {
 
 	// MongoDB Constants
@@ -49,4 +50,7 @@ public final class BookmarkPersistanceConstants {
 	public static final String PARAM_USER_ID_NAME = "userId";
 	public static final String PARAM_COLLECTION_NAME = "collectionId";
 
+	private BookmarkPersistanceConstants() {
+
+	}
 }

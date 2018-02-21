@@ -12,7 +12,6 @@
     <rule ref="rulesets/java/codesize.xml">
         <exclude name="NPathComplexity" />
         <exclude name="CyclomaticComplexity" />
-        <exclude name="TooManyMethods" />
     </rule>
 
     <rule ref="rulesets/java/comments.xml/CommentSize">
@@ -29,8 +28,6 @@
     </rule>
 
     <rule ref="rulesets/java/design.xml">
-        <exclude name="ConfusingTernary" />
-        <exclude name="UseUtilityClass" />
     </rule>
 
     <rule ref="rulesets/java/empty.xml">
@@ -62,12 +59,7 @@
     <rule ref="rulesets/java/migrating.xml" />
 
     <rule ref="rulesets/java/naming.xml">
-        <exclude name="LongVariable" />
-        <exclude name="ShortVariable" />
-        <exclude name="ShortMethodName" />
-        <exclude name="ShortClassName" />
         <exclude name="AvoidFieldNameMatchingMethodName" />
-        <exclude name="AbstractNaming" />
     </rule>
 
     <rule ref="rulesets/java/optimizations.xml">

@@ -12,7 +12,7 @@ import java.util.Locale;
 
 import org.bson.Document;
 import org.gerdi.bookmark.backend.BookmarkPersistanceConstants;
-import org.gerdi.bookmark.backend.DocumentUtils;
+import org.gerdi.bookmark.backend.DocumentUtility;
 import org.gerdi.bookmark.backend.Message;
 
 import com.google.gson.Gson;
@@ -65,7 +65,7 @@ public class PostCollection extends AbstractBookmarkRoute {
 
 		// Check whether the doc exists in our system
 		for (final String doc : docsList) {
-			if (!DocumentUtils.checkIfDocExists(doc)) {
+			if (!DocumentUtility.checkIfDocExists(doc)) {
 				failedDocs.add(doc);
 			}
 		}

@@ -9,15 +9,18 @@ import org.elasticsearch.action.get.GetResponse;
 
 /**
  * Utility class for document retrival
- * 
+ *
  * @author Nelson Tavares de Sousa
  *
  */
-public class DocumentUtils {
+public final class DocumentUtility {
+
+	private DocumentUtility() {
+	}
 
 	/**
 	 * This method check whether or not a document exists in our system.
-	 * 
+	 *
 	 * @param docId
 	 *            The ID of the document to be checked
 	 * @return true if the document exists, false otherwise
@@ -31,7 +34,7 @@ public class DocumentUtils {
 
 	/**
 	 * This method retrieves a document and returns it in a specific format.
-	 * 
+	 *
 	 * @param docId
 	 *            The ID of the document to be retrieved
 	 * @return A Map containing the document id and the source data. The value of
@@ -42,7 +45,7 @@ public class DocumentUtils {
 		final GetRequest getRequest = new GetRequest(BookmarkPersistanceConstants.GERDI_ES_INDEXNAME,
 				BookmarkPersistanceConstants.GERDI_ES_TYPENAME, docId);
 		final GetResponse getResponse = BookmarkPersistanceConstants.ES_CLIENT.get(getRequest);
-		final Map<String, Object> retVal = new HashMap<String, Object>();
+		final Map<String, Object> retVal = new HashMap<>();
 		retVal.put("_source", getResponse.getSource());
 		retVal.put("_id", docId);
 		return retVal;
