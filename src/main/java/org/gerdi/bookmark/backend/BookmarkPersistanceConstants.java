@@ -39,7 +39,7 @@ public final class BookmarkPersistanceConstants {
 	// Other stuff
 	public static final String APPLICATION_JSON = "application/json";
 	public static final SimpleDateFormat DATE_STRING = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	public static final String PATH_PREFIX = "/collections";
+	public static final String PATH_PREFIX = "/api/v1/collections";
 
 	// MongoDB Field Names
 	public static final String DB_COLLECTION_FIELD_NAME = "collectionName";
