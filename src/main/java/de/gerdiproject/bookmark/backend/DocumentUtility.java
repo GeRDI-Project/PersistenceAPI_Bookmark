@@ -31,69 +31,69 @@ import org.elasticsearch.action.get.GetResponse;
 public final class DocumentUtility
 {
 
-	private DocumentUtility()
-	{
-	}
+    private DocumentUtility()
+    {
+    }
 
-	/**
-	 * This method checks whether or not a document exists in our system.
-	 *
-	 * @param docId
-	 *            The ID of the document to be checked
-	 * @return true if the document exists, false otherwise
-	 * @throws IOException
-	 *             Thrown by the Elasticsearch client upon failed connection.
-	 */
-	public static boolean doesDocumentExist(final String docId)
-			throws IOException
-	{
-		final GetRequest getRequest = new GetRequest(
-				BookmarkPersistenceConstants.GERDI_ES_INDEXNAME,
-				BookmarkPersistenceConstants.GERDI_ES_TYPENAME, docId);
-		return BookmarkPersistenceConstants.ES_CLIENT.get(getRequest)
-				.isExists();
-	}
+    /**
+     * This method checks whether or not a document exists in our system.
+     *
+     * @param docId
+     *            The ID of the document to be checked
+     * @return true if the document exists, false otherwise
+     * @throws IOException
+     *             Thrown by the Elasticsearch client upon failed connection.
+     */
+    public static boolean doesDocumentExist(final String docId)
+    throws IOException
+    {
+        final GetRequest getRequest = new GetRequest(
+            BookmarkPersistenceConstants.GERDI_ES_INDEXNAME,
+            BookmarkPersistenceConstants.GERDI_ES_TYPENAME, docId);
+        return BookmarkPersistenceConstants.ES_CLIENT.get(getRequest)
+               .isExists();
+    }
 
-	/**
-	 * This method retrieves a document and returns it.
-	 *
-	 * @param docId
-	 *            The ID of the document to be retrieved
-	 * @return A Map containing the document id and the source data. The value
-	 *         of the source data may be null if no such document can be found.
-	 * @throws IOException
-	 *             Thrown by the Elasticsearch client upon failed connection.
-	 */
-	public static BookmarkDocument retrieveDoc(final String docId)
-			throws IOException
-	{
-		final GetRequest getRequest = new GetRequest(
-				BookmarkPersistenceConstants.GERDI_ES_INDEXNAME,
-				BookmarkPersistenceConstants.GERDI_ES_TYPENAME, docId);
-		final GetResponse getResponse = BookmarkPersistenceConstants.ES_CLIENT
-				.get(getRequest);
-		return new BookmarkDocument(docId, getResponse.getSource());
-	}
+    /**
+     * This method retrieves a document and returns it.
+     *
+     * @param docId
+     *            The ID of the document to be retrieved
+     * @return A Map containing the document id and the source data. The value
+     *         of the source data may be null if no such document can be found.
+     * @throws IOException
+     *             Thrown by the Elasticsearch client upon failed connection.
+     */
+    public static BookmarkDocument retrieveDoc(final String docId)
+    throws IOException
+    {
+        final GetRequest getRequest = new GetRequest(
+            BookmarkPersistenceConstants.GERDI_ES_INDEXNAME,
+            BookmarkPersistenceConstants.GERDI_ES_TYPENAME, docId);
+        final GetResponse getResponse = BookmarkPersistenceConstants.ES_CLIENT
+                                        .get(getRequest);
+        return new BookmarkDocument(docId, getResponse.getSource());
+    }
 
-	/**
-	 * Creates a MongoDB document representing a collection.
-	 * 
-	 * @param userId
-	 *            The user's identifier
-	 * @param collectionName
-	 *            The name of the collection
-	 * @param docsList
-	 *            A list of documents to be saved
-	 * @return A new MongoDB document representing the given attributes
-	 */
-	public static Document createBookmarkDoc(final String userId,
-			final String collectionName, final List<String> docsList)
-	{
-		return new Document(
-				BookmarkPersistenceConstants.DB_USER_ID_FIELD_NAME, userId)
-						.append(BookmarkPersistenceConstants.DB_DOCS_FIELD_NAME,
-								docsList)
-						.append(BookmarkPersistenceConstants.DB_COLLECTION_FIELD_NAME,
-								collectionName);
-	}
+    /**
+     * Creates a MongoDB document representing a collection.
+     *
+     * @param userId
+     *            The user's identifier
+     * @param collectionName
+     *            The name of the collection
+     * @param docsList
+     *            A list of documents to be saved
+     * @return A new MongoDB document representing the given attributes
+     */
+    public static Document createBookmarkDoc(final String userId,
+                                             final String collectionName, final List<String> docsList)
+    {
+        return new Document(
+                   BookmarkPersistenceConstants.DB_USER_ID_FIELD_NAME, userId)
+               .append(BookmarkPersistenceConstants.DB_DOCS_FIELD_NAME,
+                       docsList)
+               .append(BookmarkPersistenceConstants.DB_COLLECTION_FIELD_NAME,
+                       collectionName);
+    }
 }
