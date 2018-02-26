@@ -29,7 +29,6 @@ import java.util.Locale;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
@@ -51,98 +50,107 @@ import spark.Response;
 public final class PutCollection extends AbstractBookmarkRoute
 {
 
-    /**
-     * Initializes the put collection route.
-     *
-     * @param collection
-     *            A MongoDB collection on which the operations are performed.
-     */
-    public PutCollection(final MongoCollection<Document> collection)
-    {
-        super(collection);
-    }
+	private static final String UNKNOWN_DOCS = "At least one document is unknown. Request was aborted.";
 
-    @Override
-    public Object handle(final Request request, final Response response)
-    throws IOException
-    {
-        response.type(BookmarkPersistenceConstants.APPLICATION_JSON);
-        if (request
-            .contentType() != BookmarkPersistenceConstants.APPLICATION_JSON)
-            halt(405);
+	/**
+	 * Initializes the put collection route.
+	 *
+	 * @param collection
+	 *            A MongoDB collection on which the operations are performed.
+	 */
+	public PutCollection(final MongoCollection<Document> collection)
+	{
+		super(collection);
+	}
 
-        final String userId = request
-                              .params(BookmarkPersistenceConstants.PARAM_USER_ID_NAME);
-        final String collectionId = request
-                                    .params(BookmarkPersistenceConstants.PARAM_COLLECTION_NAME);
+	@Override
+	public Object handle(final Request request, final Response response)
+			throws IOException
+	{
+		response.type(BookmarkPersistenceConstants.APPLICATION_JSON);
+		if (request
+				.contentType() != BookmarkPersistenceConstants.APPLICATION_JSON)
+		{
+			halt(405);
+		}
 
-        final JsonElement requestBody = new JsonParser().parse(request.body());
+		final String userId = request
+				.params(BookmarkPersistenceConstants.PARAM_USER_ID_NAME);
+		final String collectionId = request
+				.params(BookmarkPersistenceConstants.PARAM_COLLECTION_NAME);
 
-        String collectionName = "";
+		final JsonElement requestBody = new JsonParser().parse(request.body());
 
-        if (requestBody.getAsJsonObject()
-            .has(BookmarkPersistenceConstants.REQUEST_NAME_FIELD_NAME)) {
-            collectionName = requestBody.getAsJsonObject().getAsJsonPrimitive(
-                                 BookmarkPersistenceConstants.REQUEST_NAME_FIELD_NAME)
-                             .getAsString();
-        }
+		String collectionName = "";
 
-        // TODO: check if collection exists... don't overwrite name, if empty
-        // string
-        if (collectionName.isEmpty()) {
-            collectionName = "Collection " + new SimpleDateFormat(
-                                 BookmarkPersistenceConstants.DATE_STRING, Locale.GERMANY)
-                             .format(new Date());
-        }
+		if (requestBody.getAsJsonObject()
+				.has(BookmarkPersistenceConstants.REQUEST_NAME_FIELD_NAME))
+		{
+			collectionName = requestBody.getAsJsonObject().getAsJsonPrimitive(
+					BookmarkPersistenceConstants.REQUEST_NAME_FIELD_NAME)
+					.getAsString();
+		}
 
-        final Type listType = new TypeToken<List<String>>() {
-        } .getType();
-        final List<String> docsList = new Gson().fromJson(
-            requestBody.getAsJsonObject().getAsJsonArray(
-                BookmarkPersistenceConstants.REQUEST_DOCS_FIELD_NAME),
-            listType);
+		// TODO: check if collection exists... don't overwrite name, if empty
+		// string
+		if (collectionName.isEmpty())
+		{
+			collectionName = "Collection " + new SimpleDateFormat(
+					BookmarkPersistenceConstants.DATE_STRING, Locale.GERMANY)
+							.format(new Date());
+		}
 
-        final List<String> failedDocs = new ArrayList<>();
+		final Type listType = new TypeToken<List<String>>()
+		{
+		}.getType();
+		final List<String> docsList = GSON.fromJson(
+				requestBody.getAsJsonObject().getAsJsonArray(
+						BookmarkPersistenceConstants.REQUEST_DOCS_FIELD_NAME),
+				listType);
 
-        // Check whether the doc exists in our system
-        for (final String doc : docsList) {
-            if (!DocumentUtility.doesDocumentExist(doc))
-                failedDocs.add(doc);
-        }
-        if (!failedDocs.isEmpty()) {
-            response.status(400);
-            final Message returnMsg = new Message(
-                "At least one document is unknown. Request was aborted.",
-                failedDocs, false);
-            return GSON.toJson(returnMsg).toString();
-        }
+		final List<String> failedDocs = new ArrayList<>();
 
-        final Document document = new Document(
-            BookmarkPersistenceConstants.DB_USER_ID_FIELD_NAME, userId)
-        .append(BookmarkPersistenceConstants.DB_DOCS_FIELD_NAME,
-                docsList)
-        .append(BookmarkPersistenceConstants.DB_COLLECTION_FIELD_NAME,
-                collectionName);
+		// Check whether the doc exists in our system
+		for (final String doc : docsList)
+		{
+			if (!DocumentUtility.doesDocumentExist(doc))
+			{
+				failedDocs.add(doc);
+			}
+		}
+		if (!failedDocs.isEmpty())
+		{
+			response.status(400);
+			final Message returnMsg = new Message(
+					UNKNOWN_DOCS,
+					failedDocs, false);
+			return GSON.toJson(returnMsg).toString();
+		}
 
-        final BasicDBObject queryId = new BasicDBObject(
-            BookmarkPersistenceConstants.DB_UID_FIELD_NAME,
-            new ObjectId(collectionId));
-        final BasicDBObject queryUser = new BasicDBObject(
-            BookmarkPersistenceConstants.DB_USER_ID_FIELD_NAME, userId);
+		final Document document = DocumentUtility.createBookmarkDoc(userId, collectionName,
+				docsList);
 
-        if (collection.find( and (queryId, queryUser)).first() == null) {
-            collection.insertOne(document.append(
-                                     BookmarkPersistenceConstants.DB_UID_FIELD_NAME,
-                                     new ObjectId(collectionId)));
-        } else {
-            collection.updateOne( and (queryId, queryUser),
-                                  new Document("$set", document));
-        }
+		final BasicDBObject queryId = new BasicDBObject(
+				BookmarkPersistenceConstants.DB_UID_FIELD_NAME,
+				new ObjectId(collectionId));
+		final BasicDBObject queryUser = new BasicDBObject(
+				BookmarkPersistenceConstants.DB_USER_ID_FIELD_NAME, userId);
 
-        response.status(201);
-        return GSON
-               .toJson(new Message("Collection updated.", collectionId, true))
-               .toString();
-    }
+		if (collection.find(and(queryId, queryUser)).first() == null)
+		{
+			collection.insertOne(document.append(
+					BookmarkPersistenceConstants.DB_UID_FIELD_NAME,
+					new ObjectId(collectionId)));
+		} else
+		{
+			collection.updateOne(and(queryId, queryUser),
+					new Document("$set", document));
+		}
+
+		response.status(201);
+		return GSON
+				.toJson(new Message("Collection updated.", collectionId, true))
+				.toString();
+	}
 
 }

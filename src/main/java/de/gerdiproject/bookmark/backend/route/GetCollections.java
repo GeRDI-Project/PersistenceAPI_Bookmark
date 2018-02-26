@@ -16,9 +16,8 @@
 package de.gerdiproject.bookmark.backend.route;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.function.Consumer;
 
 import org.bson.Document;
 
@@ -26,6 +25,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 
+import de.gerdiproject.bookmark.backend.BookmarkCollection;
 import de.gerdiproject.bookmark.backend.BookmarkPersistenceConstants;
 import spark.Request;
 import spark.Response;
@@ -39,41 +39,33 @@ import spark.Response;
 public class GetCollections extends AbstractBookmarkRoute
 {
 
-    /**
-     * Initializes the get collections route.
-     *
-     * @param collection
-     *            A MongoDB collection on which the operations are performed.
-     */
-    public GetCollections(final MongoCollection<Document> collection)
-    {
-        super(collection);
-    }
+	/**
+	 * Initializes the get collections route.
+	 *
+	 * @param collection
+	 *            A MongoDB collection on which the operations are performed.
+	 */
+	public GetCollections(final MongoCollection<Document> collection)
+	{
+		super(collection);
+	}
 
-    @Override
-    public Object handle(final Request request, final Response response)
-    {
-        response.type(BookmarkPersistenceConstants.APPLICATION_JSON);
-        final String userId = request
-                              .params(BookmarkPersistenceConstants.PARAM_USER_ID_NAME);
+	@Override
+	public Object handle(final Request request, final Response response)
+	{
+		response.type(BookmarkPersistenceConstants.APPLICATION_JSON);
+		final String userId = request
+				.params(BookmarkPersistenceConstants.PARAM_USER_ID_NAME);
 
-        final BasicDBObject query = new BasicDBObject(
-            BookmarkPersistenceConstants.DB_USER_ID_FIELD_NAME, userId);
+		final BasicDBObject query = new BasicDBObject(
+				BookmarkPersistenceConstants.DB_USER_ID_FIELD_NAME, userId);
 
-        final FindIterable<Document> myCursor = collection.find(query);
-        final List<Map<String, String>> collectionsList = new ArrayList<>();
-        for (final Document doc : myCursor) {
-            final HashMap<String, String> temp = new HashMap<>();
-            temp.put(BookmarkPersistenceConstants.RESPONSE_UID_FIELD_NAME,
-                     doc.getObjectId(
-                         BookmarkPersistenceConstants.DB_UID_FIELD_NAME)
-                     .toString());
-            temp.put(BookmarkPersistenceConstants.RESPONSE_NAME_FIELD_NAME,
-                     doc.getString(
-                         BookmarkPersistenceConstants.DB_COLLECTION_FIELD_NAME));
-            collectionsList.add(temp);
-        }
-        return GSON.toJson(collectionsList).toString();
-    }
+		final FindIterable<Document> myCursor = collection.find(query);
+		final List<BookmarkCollection> collectionsList = new ArrayList<>();
+		myCursor.forEach(
+				(Consumer<Document>) (final Document doc) -> collectionsList
+						.add(new BookmarkCollection(doc)));
+		return GSON.toJson(collectionsList).toString();
+	}
 
 }

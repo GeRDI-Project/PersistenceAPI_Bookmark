@@ -26,126 +26,85 @@ import java.util.List;
 public final class Message
 {
 
-    private String message; // NOPMD ignore the same name for the class and the
-    // field here
-    private List<String> docs;
-    private String collectionId;
-    private boolean acknowledged;
+	private final String message; // NOPMD ignore the same name for the class
+									// and the
+									// field here
+	private final List<String> docs;
+	private final String collectionId;
+	private final boolean acknowledged;
 
-    /**
-     * Initializes just the message.
-     *
-     * @param message
-     *            A string containing a message.
-     */
-    private Message(final String message)
-    {
-        this.message = message;
-    }
+	/**
+	 * Initializes the class with only a acknowledged info.
+	 *
+	 * @param acknowledged
+	 *            A boolean value indicating the acknowledgment.
+	 */
+	public Message(final boolean acknowledged)
+	{
+		this.message = null;
+		this.collectionId = null;
+		this.acknowledged = acknowledged;
+		this.docs = null;
+	}
 
-    /**
-     * Initializes the class with only a acknowledged info.
-     *
-     * @param acknowledged
-     *            A boolean value indicating the acknowledgment.
-     */
-    public Message(final boolean acknowledged)
-    {
-        this.acknowledged = acknowledged;
-    }
+	/**
+	 * Initializes the class with a message string, a list of relevant
+	 * documents, and an acknowledgement flag.
+	 *
+	 * @param message
+	 *            A string containing a message.
+	 * @param docs
+	 *            A list of relevant documents.
+	 * @param acknowledged
+	 *            A boolean value indicating the acknowledgment.
+	 */
+	public Message(final String message, final List<String> docs,
+			final boolean acknowledged)
+	{
+		this.message = message;
+		this.collectionId = null;
+		this.acknowledged = acknowledged;
+		this.docs = docs;
+	}
 
-    /**
-     * Initializes the class with a message string and a list of relevant
-     * documents
-     *
-     * @param message
-     *            A string containing a message.
-     * @param docs
-     *            A list of relevant documents.
-     */
-    private Message(final String message, final List<String> docs)
-    {
-        this(message);
-        this.docs = docs;
-    }
+	/**
+	 * Initializes the class with a message string, a collection name, and an
+	 * acknowledgement flag.
+	 *
+	 * @param message
+	 *            A string containing a message.
+	 * @param collectionId
+	 *            A string containing the name of the collection.
+	 * @param acknowledged
+	 *            A boolean value indicating the acknowledgment.
+	 */
+	public Message(final String message, final String collectionId,
+			final boolean acknowledged)
+	{
+		this.message = message;
+		this.collectionId = collectionId;
+		this.acknowledged = acknowledged;
+		this.docs = null;
+	}
 
-    /**
-     * Initializes the class with a message string and a collection id.
-     *
-     * @param message
-     *            A string containing a message.
-     * @param collectionId
-     *            A string containing the collection identifier.
-     */
-    private Message(final String message, final String collectionId)
-    {
-        this(message);
-        this.collectionId = collectionId;
-    }
+	public List<String> getDocs()
+	{
+		return docs;
+	}
 
-    /**
-     * Initializes the class with a message string, a list of relevant
-     * documents, and a acknowledgement flag.
-     *
-     * @param message
-     *            A string containing a message.
-     * @param docs
-     *            A list of relevant documents.
-     * @param acknowledged
-     *            A boolean value indicating the acknowledgment.
-     */
-    public Message(final String message, final List<String> docs,
-                   final boolean acknowledged)
-    {
-        this(message, docs);
-        this.setAcknowledged(acknowledged);
-    }
+	public String getMessage()
+	{
+		return message;
+	}
 
-    public Message(final String message, final String collectionId,
-                   final boolean acknowledged)
-    {
-        this(message, collectionId);
-        this.setAcknowledged(acknowledged);
-    }
+	public String getCollectionId()
+	{
+		return collectionId;
+	}
 
-    public List<String> getDocs()
-    {
-        return docs;
-    }
-
-    public void setDocs(final List<String> docs)
-    {
-        this.docs = docs;
-    }
-
-    public String getMessage()
-    {
-        return message;
-    }
-
-    public void setMessage(final String message)
-    {
-        this.message = message;
-    }
-
-    public String getCollectionId()
-    {
-        return collectionId;
-    }
-
-    public void setCollectionId(final String collectionId)
-    {
-        this.collectionId = collectionId;
-    }
-
-    public boolean isAcknowledged()
-    {
-        return acknowledged;
-    }
-
-    public void setAcknowledged(final boolean acknowledged)
-    {
-        this.acknowledged = acknowledged;
-    }
+	public boolean isAcknowledged()
+	{
+		return acknowledged;
+	}
 
 }
