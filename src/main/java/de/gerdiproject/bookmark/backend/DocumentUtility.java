@@ -31,52 +31,52 @@ import org.elasticsearch.action.get.GetResponse;
 public final class DocumentUtility
 {
 
-	private DocumentUtility()
-	{
-	}
+    private DocumentUtility()
+    {
+    }
 
-	/**
-	 * This method checks whether or not a document exists in our system.
-	 *
-	 * @param docId
-	 *            The ID of the document to be checked
-	 * @return true if the document exists, false otherwise
-	 * @throws IOException
-	 *             Thrown by the Elasticsearch client upon failed connection.
-	 */
-	public static boolean doesDocumentExist(final String docId)
-			throws IOException
-	{
-		final GetRequest getRequest = new GetRequest(
-				BookmarkPersistenceConstants.GERDI_ES_INDEXNAME,
-				BookmarkPersistenceConstants.GERDI_ES_TYPENAME, docId);
-		return BookmarkPersistenceConstants.ES_CLIENT.get(getRequest)
-				.isExists();
-	}
+    /**
+     * This method checks whether or not a document exists in our system.
+     *
+     * @param docId
+     *            The ID of the document to be checked
+     * @return true if the document exists, false otherwise
+     * @throws IOException
+     *             Thrown by the Elasticsearch client upon failed connection.
+     */
+    public static boolean doesDocumentExist(final String docId)
+    throws IOException
+    {
+        final GetRequest getRequest = new GetRequest(
+            BookmarkPersistenceConstants.GERDI_ES_INDEXNAME,
+            BookmarkPersistenceConstants.GERDI_ES_TYPENAME, docId);
+        return BookmarkPersistenceConstants.ES_CLIENT.get(getRequest)
+               .isExists();
+    }
 
-	/**
-	 * This method retrieves a document and returns it.
-	 *
-	 * @param docId
-	 *            The ID of the document to be retrieved
-	 * @return A Map containing the document id and the source data. The value
-	 *         of the source data may be null if no such document can be found.
-	 * @throws IOException
-	 *             Thrown by the Elasticsearch client upon failed connection.
-	 */
-	public static Map<String, Object> retrieveDoc(final String docId)
-			throws IOException
-	{
-		final GetRequest getRequest = new GetRequest(
-				BookmarkPersistenceConstants.GERDI_ES_INDEXNAME,
-				BookmarkPersistenceConstants.GERDI_ES_TYPENAME, docId);
-		final GetResponse getResponse = BookmarkPersistenceConstants.ES_CLIENT
-				.get(getRequest);
-		final Map<String, Object> retVal = new HashMap<>();
-		retVal.put(BookmarkPersistenceConstants.RESPONSE_SOURCE_FIELD_NAME,
-				getResponse.getSource());
-		retVal.put(BookmarkPersistenceConstants.RESPONSE_UID_FIELD_NAME, docId);
-		return retVal;
-	}
+    /**
+     * This method retrieves a document and returns it.
+     *
+     * @param docId
+     *            The ID of the document to be retrieved
+     * @return A Map containing the document id and the source data. The value
+     *         of the source data may be null if no such document can be found.
+     * @throws IOException
+     *             Thrown by the Elasticsearch client upon failed connection.
+     */
+    public static Map<String, Object> retrieveDoc(final String docId)
+    throws IOException
+    {
+        final GetRequest getRequest = new GetRequest(
+            BookmarkPersistenceConstants.GERDI_ES_INDEXNAME,
+            BookmarkPersistenceConstants.GERDI_ES_TYPENAME, docId);
+        final GetResponse getResponse = BookmarkPersistenceConstants.ES_CLIENT
+                                        .get(getRequest);
+        final Map<String, Object> retVal = new HashMap<>();
+        retVal.put(BookmarkPersistenceConstants.RESPONSE_SOURCE_FIELD_NAME,
+                   getResponse.getSource());
+        retVal.put(BookmarkPersistenceConstants.RESPONSE_UID_FIELD_NAME, docId);
+        return retVal;
+    }
 
 }

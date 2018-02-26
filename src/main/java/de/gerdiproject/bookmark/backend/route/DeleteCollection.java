@@ -38,36 +38,36 @@ import spark.Response;
 public final class DeleteCollection extends AbstractBookmarkRoute
 {
 
-	/**
-	 * Initializes the delete collections route.
-	 *
-	 * @param collection
-	 *            A MongoDB collection on which the operations are performed.
-	 */
-	public DeleteCollection(final MongoCollection<Document> collection)
-	{
-		super(collection);
-	}
+    /**
+     * Initializes the delete collections route.
+     *
+     * @param collection
+     *            A MongoDB collection on which the operations are performed.
+     */
+    public DeleteCollection(final MongoCollection<Document> collection)
+    {
+        super(collection);
+    }
 
-	@Override
-	public Object handle(final Request request, final Response response)
-	{
-		response.type(BookmarkPersistenceConstants.APPLICATION_JSON);
+    @Override
+    public Object handle(final Request request, final Response response)
+    {
+        response.type(BookmarkPersistenceConstants.APPLICATION_JSON);
 
-		final String userId = request
-				.params(BookmarkPersistenceConstants.PARAM_USER_ID_NAME);
-		final String collectionId = request
-				.params(BookmarkPersistenceConstants.PARAM_COLLECTION_NAME);
+        final String userId = request
+                              .params(BookmarkPersistenceConstants.PARAM_USER_ID_NAME);
+        final String collectionId = request
+                                    .params(BookmarkPersistenceConstants.PARAM_COLLECTION_NAME);
 
-		final BasicDBObject query1 = new BasicDBObject(
-				BookmarkPersistenceConstants.DB_UID_FIELD_NAME,
-				new ObjectId(collectionId));
-		final BasicDBObject query2 = new BasicDBObject(
-				BookmarkPersistenceConstants.DB_USER_ID_FIELD_NAME, userId);
-		final DeleteResult result = collection.deleteOne(and(query1, query2));
+        final BasicDBObject query1 = new BasicDBObject(
+            BookmarkPersistenceConstants.DB_UID_FIELD_NAME,
+            new ObjectId(collectionId));
+        final BasicDBObject query2 = new BasicDBObject(
+            BookmarkPersistenceConstants.DB_USER_ID_FIELD_NAME, userId);
+        final DeleteResult result = collection.deleteOne( and (query1, query2));
 
-		response.status(202);
-		return GSON.toJson(new Message(result.wasAcknowledged())).toString();
-	}
+        response.status(202);
+        return GSON.toJson(new Message(result.wasAcknowledged())).toString();
+    }
 
 }

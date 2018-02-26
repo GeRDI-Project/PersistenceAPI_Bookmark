@@ -48,92 +48,82 @@ import spark.Response;
 public class PostCollection extends AbstractBookmarkRoute
 {
 
-	/**
-	 * Initializes the post collections route.
-	 *
-	 * @param collection
-	 *            A MongoDB collection on which the operations are performed.
-	 */
-	public PostCollection(final MongoCollection<Document> collection)
-	{
-		super(collection);
-	}
+    /**
+     * Initializes the post collections route.
+     *
+     * @param collection
+     *            A MongoDB collection on which the operations are performed.
+     */
+    public PostCollection(final MongoCollection<Document> collection)
+    {
+        super(collection);
+    }
 
-	@Override
-	public Object handle(final Request request, final Response response)
-			throws IOException
-	{
-		response.type(BookmarkPersistenceConstants.APPLICATION_JSON);
-		if (request
-				.contentType() != BookmarkPersistenceConstants.APPLICATION_JSON)
-		{
-			halt(405);
-		}
-		final String userId = request
-				.params(BookmarkPersistenceConstants.PARAM_USER_ID_NAME);
-		final JsonElement requestBody = new JsonParser().parse(request.body());
+    @Override
+    public Object handle(final Request request, final Response response)
+    throws IOException
+    {
+        response.type(BookmarkPersistenceConstants.APPLICATION_JSON);
+        if (request
+            .contentType() != BookmarkPersistenceConstants.APPLICATION_JSON)
+            halt(405);
+        final String userId = request
+                              .params(BookmarkPersistenceConstants.PARAM_USER_ID_NAME);
+        final JsonElement requestBody = new JsonParser().parse(request.body());
 
-		String collectionName = "";
+        String collectionName = "";
 
-		if (requestBody.getAsJsonObject()
-				.has(BookmarkPersistenceConstants.REQUEST_NAME_FIELD_NAME))
-		{
-			collectionName = requestBody.getAsJsonObject().getAsJsonPrimitive(
-					BookmarkPersistenceConstants.REQUEST_NAME_FIELD_NAME)
-					.getAsString();
-		}
+        if (requestBody.getAsJsonObject()
+            .has(BookmarkPersistenceConstants.REQUEST_NAME_FIELD_NAME)) {
+            collectionName = requestBody.getAsJsonObject().getAsJsonPrimitive(
+                                 BookmarkPersistenceConstants.REQUEST_NAME_FIELD_NAME)
+                             .getAsString();
+        }
 
-		if (collectionName.isEmpty())
-		{
-			collectionName = "Collection " + new SimpleDateFormat(
-					BookmarkPersistenceConstants.DATE_STRING, Locale.GERMANY)
-							.format(new Date());
-		}
+        if (collectionName.isEmpty()) {
+            collectionName = "Collection " + new SimpleDateFormat(
+                                 BookmarkPersistenceConstants.DATE_STRING, Locale.GERMANY)
+                             .format(new Date());
+        }
 
-		final Type listType = new TypeToken<List<String>>()
-		{
-		}.getType();
-		final List<String> docsList = new Gson().fromJson(
-				requestBody.getAsJsonObject().getAsJsonArray(
-						BookmarkPersistenceConstants.REQUEST_DOCS_FIELD_NAME),
-				listType);
+        final Type listType = new TypeToken<List<String>>() {
+        } .getType();
+        final List<String> docsList = new Gson().fromJson(
+            requestBody.getAsJsonObject().getAsJsonArray(
+                BookmarkPersistenceConstants.REQUEST_DOCS_FIELD_NAME),
+            listType);
 
-		final List<String> failedDocs = new ArrayList<>();
+        final List<String> failedDocs = new ArrayList<>();
 
-		// Check whether the doc exists in our system
-		for (final String doc : docsList)
-		{
-			if (!DocumentUtility.doesDocumentExist(doc))
-			{
-				failedDocs.add(doc);
-			}
-		}
-		Message returnMsg;
-		if (failedDocs.isEmpty())
-		{
+        // Check whether the doc exists in our system
+        for (final String doc : docsList) {
+            if (!DocumentUtility.doesDocumentExist(doc))
+                failedDocs.add(doc);
+        }
+        Message returnMsg;
+        if (failedDocs.isEmpty()) {
 
-			final Document document = new Document(
-					BookmarkPersistenceConstants.DB_USER_ID_FIELD_NAME, userId)
-							.append(BookmarkPersistenceConstants.DB_DOCS_FIELD_NAME,
-									docsList)
-							.append(BookmarkPersistenceConstants.DB_COLLECTION_FIELD_NAME,
-									collectionName);
+            final Document document = new Document(
+                BookmarkPersistenceConstants.DB_USER_ID_FIELD_NAME, userId)
+            .append(BookmarkPersistenceConstants.DB_DOCS_FIELD_NAME,
+                    docsList)
+            .append(BookmarkPersistenceConstants.DB_COLLECTION_FIELD_NAME,
+                    collectionName);
 
-			collection.insertOne(document);
+            collection.insertOne(document);
 
-			response.status(201);
-			returnMsg = new Message("Collection created.",
-					document.get(BookmarkPersistenceConstants.DB_UID_FIELD_NAME)
-							.toString(),
-					true);
-		} else
-		{
-			response.status(400);
-			returnMsg = new Message(
-					"At least one document is unknown. Request was aborted.",
-					failedDocs, false);
-		}
-		return GSON.toJson(returnMsg).toString();
-	}
+            response.status(201);
+            returnMsg = new Message("Collection created.",
+                                    document.get(BookmarkPersistenceConstants.DB_UID_FIELD_NAME)
+                                    .toString(),
+                                    true);
+        } else {
+            response.status(400);
+            returnMsg = new Message(
+                "At least one document is unknown. Request was aborted.",
+                failedDocs, false);
+        }
+        return GSON.toJson(returnMsg).toString();
+    }
 
 }

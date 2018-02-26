@@ -43,48 +43,44 @@ import spark.Response;
 public final class GetDocuments extends AbstractBookmarkRoute
 {
 
-	/**
-	 * Initializes the get documents route.
-	 *
-	 * @param collection
-	 *            A MongoDB collection on which the operations are performed.
-	 */
-	public GetDocuments(final MongoCollection<Document> collection)
-	{
-		super(collection);
-	}
+    /**
+     * Initializes the get documents route.
+     *
+     * @param collection
+     *            A MongoDB collection on which the operations are performed.
+     */
+    public GetDocuments(final MongoCollection<Document> collection)
+    {
+        super(collection);
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public Object handle(final Request request, final Response response)
-			throws IOException
-	{
-		response.type(BookmarkPersistenceConstants.APPLICATION_JSON);
-		final String userId = request
-				.params(BookmarkPersistenceConstants.PARAM_USER_ID_NAME);
-		final String collectionId = request
-				.params(BookmarkPersistenceConstants.PARAM_COLLECTION_NAME);
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object handle(final Request request, final Response response)
+    throws IOException
+    {
+        response.type(BookmarkPersistenceConstants.APPLICATION_JSON);
+        final String userId = request
+                              .params(BookmarkPersistenceConstants.PARAM_USER_ID_NAME);
+        final String collectionId = request
+                                    .params(BookmarkPersistenceConstants.PARAM_COLLECTION_NAME);
 
-		final BasicDBObject queryId = new BasicDBObject(
-				BookmarkPersistenceConstants.DB_UID_FIELD_NAME,
-				new ObjectId(collectionId));
-		final BasicDBObject queryUser = new BasicDBObject(
-				BookmarkPersistenceConstants.DB_USER_ID_FIELD_NAME, userId);
-		final FindIterable<Document> result = collection
-				.find(and(queryId, queryUser));
+        final BasicDBObject queryId = new BasicDBObject(
+            BookmarkPersistenceConstants.DB_UID_FIELD_NAME,
+            new ObjectId(collectionId));
+        final BasicDBObject queryUser = new BasicDBObject(
+            BookmarkPersistenceConstants.DB_USER_ID_FIELD_NAME, userId);
+        final FindIterable<Document> result = collection
+                                              .find( and (queryId, queryUser));
 
-		if (result.first() == null)
-		{
-			return "[]";
-		}
+        if (result.first() == null)
+            return "[]";
 
-		final List<Map<String, Object>> docs = new ArrayList<>();
-		for (final String doc : ((List<String>) result.first()
-				.get(BookmarkPersistenceConstants.DB_DOCS_FIELD_NAME)))
-		{
-			docs.add(DocumentUtility.retrieveDoc(doc));
-		}
-		return GSON.toJson(docs).toString();
-	}
+        final List<Map<String, Object>> docs = new ArrayList<>();
+        for (final String doc : ((List<String>) result.first()
+                                 .get(BookmarkPersistenceConstants.DB_DOCS_FIELD_NAME)))
+            docs.add(DocumentUtility.retrieveDoc(doc));
+        return GSON.toJson(docs).toString();
+    }
 
 }

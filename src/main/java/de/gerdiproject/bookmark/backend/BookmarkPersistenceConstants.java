@@ -31,64 +31,64 @@ import com.mongodb.MongoCredential;
 public final class BookmarkPersistenceConstants
 {
 
-	// MongoDB Constants
-	static final int MONGO_DB_PORT = Integer.parseInt(
-			System.getenv().getOrDefault("BOOKMARK_MONGODB_PORT", "27017"));
-	static final String MONGO_DB_COLLECTION_NAME = System.getenv()
-			.getOrDefault("BOOKMARK_MONGODB_COLLECTION_NAME", "collections");
-	static final String MONGO_DB_DB_NAME = System.getenv()
-			.getOrDefault("BOOKMARK_MONGODB_DB_NAME", "select");
-	static final String MONGO_DB_HOSTNAME = System.getenv()
-			.getOrDefault("BOOKMARK_MONGODB_DB_HOSTNAME", "localhost");
-	static final String MONGO_DB_ADMIN_DB_NAME = System.getenv()
-			.getOrDefault("BOOKMARK_MONGODB_ADMIN_DB_NAME", "admin");
-	static final String MONGO_DB_USER = System.getenv()
-			.getOrDefault("BOOKMARK_MONGODB_USERNAME", "admin");
-	static final String MONGO_DB_PASSWORD = System.getenv()
-			.getOrDefault("BOOKMARK_MONGODB_PASSWORD", "");
-	static final MongoCredential MONGO_DB_CREDENTIAL = MongoCredential
-			.createCredential(MONGO_DB_USER, MONGO_DB_ADMIN_DB_NAME,
-					MONGO_DB_PASSWORD.toCharArray());
+    // MongoDB Constants
+    static final int MONGO_DB_PORT = Integer.parseInt(
+                                         System.getenv().getOrDefault("BOOKMARK_MONGODB_PORT", "27017"));
+    static final String MONGO_DB_COLLECTION_NAME = System.getenv()
+                                                   .getOrDefault("BOOKMARK_MONGODB_COLLECTION_NAME", "collections");
+    static final String MONGO_DB_DB_NAME = System.getenv()
+                                           .getOrDefault("BOOKMARK_MONGODB_DB_NAME", "select");
+    static final String MONGO_DB_HOSTNAME = System.getenv()
+                                            .getOrDefault("BOOKMARK_MONGODB_DB_HOSTNAME", "localhost");
+    static final String MONGO_DB_ADMIN_DB_NAME = System.getenv()
+                                                 .getOrDefault("BOOKMARK_MONGODB_ADMIN_DB_NAME", "admin");
+    static final String MONGO_DB_USER = System.getenv()
+                                        .getOrDefault("BOOKMARK_MONGODB_USERNAME", "admin");
+    static final String MONGO_DB_PASSWORD = System.getenv()
+                                            .getOrDefault("BOOKMARK_MONGODB_PASSWORD", "");
+    static final MongoCredential MONGO_DB_CREDENTIAL = MongoCredential
+                                                       .createCredential(MONGO_DB_USER, MONGO_DB_ADMIN_DB_NAME,
+                                                                         MONGO_DB_PASSWORD.toCharArray());
 
-	// Elasticsearch Constants
-	static final String GERDI_ES_HOSTNAME = System.getenv()
-			.getOrDefault("GERDI_ES_HOSTNAME", "localhost");
-	static final String GERDI_ES_INDEXNAME = System.getenv()
-			.getOrDefault("GERDI_ES_INDEXNAME", "gerdi");
-	static final String GERDI_ES_TYPENAME = System.getenv()
-			.getOrDefault("GERDI_ES_TYPENAME", "metadata");
-	static final int GERDI_ES_PORT = Integer
-			.parseInt(System.getenv().getOrDefault("GERDI_ES_PORT", "9200"));
-	static final RestHighLevelClient ES_CLIENT = new RestHighLevelClient(
-			RestClient.builder(
-					new HttpHost(GERDI_ES_HOSTNAME, GERDI_ES_PORT, "http")));
+    // Elasticsearch Constants
+    static final String GERDI_ES_HOSTNAME = System.getenv()
+                                            .getOrDefault("GERDI_ES_HOSTNAME", "localhost");
+    static final String GERDI_ES_INDEXNAME = System.getenv()
+                                             .getOrDefault("GERDI_ES_INDEXNAME", "gerdi");
+    static final String GERDI_ES_TYPENAME = System.getenv()
+                                            .getOrDefault("GERDI_ES_TYPENAME", "metadata");
+    static final int GERDI_ES_PORT = Integer
+                                     .parseInt(System.getenv().getOrDefault("GERDI_ES_PORT", "9200"));
+    static final RestHighLevelClient ES_CLIENT = new RestHighLevelClient(
+        RestClient.builder(
+            new HttpHost(GERDI_ES_HOSTNAME, GERDI_ES_PORT, "http")));
 
-	// Other stuff
-	public static final String APPLICATION_JSON = "application/json";
-	public static final String DATE_STRING = "yyyy-MM-dd HH:mm:ss";
-	public static final String PATH_PREFIX = "/api/v1/collections";
+    // Other stuff
+    public static final String APPLICATION_JSON = "application/json";
+    public static final String DATE_STRING = "yyyy-MM-dd HH:mm:ss";
+    public static final String PATH_PREFIX = "/api/v1/collections";
 
-	// MongoDB Field Names
-	public static final String DB_COLLECTION_FIELD_NAME = "collectionName";
-	public static final String DB_USER_ID_FIELD_NAME = "userId";
-	public static final String DB_DOCS_FIELD_NAME = "docs";
-	public static final String DB_UID_FIELD_NAME = "_id";
+    // MongoDB Field Names
+    public static final String DB_COLLECTION_FIELD_NAME = "collectionName";
+    public static final String DB_USER_ID_FIELD_NAME = "userId";
+    public static final String DB_DOCS_FIELD_NAME = "docs";
+    public static final String DB_UID_FIELD_NAME = "_id";
 
-	// Param Constants
-	public static final String PARAM_USER_ID_NAME = "userId";
-	public static final String PARAM_COLLECTION_NAME = "collectionId";
+    // Param Constants
+    public static final String PARAM_USER_ID_NAME = "userId";
+    public static final String PARAM_COLLECTION_NAME = "collectionId";
 
-	// Response Field Names
-	public static final String RESPONSE_UID_FIELD_NAME = "_id";
-	public static final String RESPONSE_NAME_FIELD_NAME = "name";
-	public static final String RESPONSE_SOURCE_FIELD_NAME = "_source";
+    // Response Field Names
+    public static final String RESPONSE_UID_FIELD_NAME = "_id";
+    public static final String RESPONSE_NAME_FIELD_NAME = "name";
+    public static final String RESPONSE_SOURCE_FIELD_NAME = "_source";
 
-	// Request Field Names
-	public static final String REQUEST_DOCS_FIELD_NAME = "docs";
-	public static final String REQUEST_NAME_FIELD_NAME = "name";
+    // Request Field Names
+    public static final String REQUEST_DOCS_FIELD_NAME = "docs";
+    public static final String REQUEST_NAME_FIELD_NAME = "name";
 
-	private BookmarkPersistenceConstants()
-	{
+    private BookmarkPersistenceConstants()
+    {
 
-	}
+    }
 }

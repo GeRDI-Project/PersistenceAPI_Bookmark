@@ -31,18 +31,18 @@ import spark.Route;
 public abstract class AbstractBookmarkRoute implements Route
 {
 
-	protected final MongoCollection<Document> collection;
-	protected final Gson GSON = new Gson();
+    protected final MongoCollection<Document> collection;
+    protected final Gson GSON = new Gson();
 
-	/**
-	 * Used to initialize the MongoDB collection field.
-	 *
-	 * @param collection
-	 *            A MongoDB collection on which the operations are performed.
-	 */
-	protected AbstractBookmarkRoute(final MongoCollection<Document> collection)
-	{
-		this.collection = collection;
-	}
+    /**
+     * Used to initialize the MongoDB collection field.
+     *
+     * @param collection
+     *            A MongoDB collection on which the operations are performed.
+     */
+    protected AbstractBookmarkRoute(final MongoCollection<Document> collection)
+    {
+        this.collection = collection;
+    }
 
 }
