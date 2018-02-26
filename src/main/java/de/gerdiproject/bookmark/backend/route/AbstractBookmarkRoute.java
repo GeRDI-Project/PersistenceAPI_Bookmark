@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.gerdi.bookmark.backend.route;
+package de.gerdiproject.bookmark.backend.route;
 
 import org.bson.Document;
 
+import com.google.gson.Gson;
 import com.mongodb.client.MongoCollection;
 
 import spark.Route;
@@ -30,11 +31,18 @@ import spark.Route;
 public abstract class AbstractBookmarkRoute implements Route
 {
 
-    protected final MongoCollection<Document> collection;
+	protected final MongoCollection<Document> collection;
+	protected final Gson GSON = new Gson();
 
-    public AbstractBookmarkRoute(final MongoCollection<Document> collection)
-    {
-        this.collection = collection;
-    }
+	/**
+	 * Used to initialize the MongoDB collection field.
+	 *
+	 * @param collection
+	 *            A MongoDB collection on which the operations are performed.
+	 */
+	protected AbstractBookmarkRoute(final MongoCollection<Document> collection)
+	{
+		this.collection = collection;
+	}
 
 }

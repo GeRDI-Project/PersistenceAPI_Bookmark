@@ -54,8 +54,8 @@ dependencies {
 
 jar {
 	manifest {
-        attributes 'Implementation-Title': 'Bookmark Persistance API',
-        			'Main-Class': 'org.gerdi.bookmark.backend.PersistanceApiService'
+        attributes 'Implementation-Title': 'Bookmark Persistence API',
+        			'Main-Class': 'de.gerdiproject.bookmark.backend.PersistenceApiService'
     }
     doFirst {
         from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } } 

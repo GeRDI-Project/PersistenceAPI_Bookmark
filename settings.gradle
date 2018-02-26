@@ -15,4 +15,4 @@ include 'api'
 include 'services:webservice'
 */
 
-rootProject.name = 'bookmark-persistance-api'
+rootProject.name = 'de.gerdi-project.bookmark-persistence-api'

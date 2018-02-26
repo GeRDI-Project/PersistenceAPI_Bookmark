@@ -1,5 +1,5 @@
 FROM openjdk:8
-COPY ./build/libs/bookmark-persistance-api.jar /usr/src/persistance-api/app.jar
-WORKDIR /usr/src/persistance-api
+COPY ./build/libs/bookmark-persistence-api.jar /usr/src/persistence-api/app.jar
+WORKDIR /usr/src/persistence-api
 ENTRYPOINT ["java", "-jar" , "app.jar"]
 
