@@ -47,7 +47,7 @@ paths:
             schema:
               $ref: "#/definitions/Collection"
       responses:
-        200:
+        201:
           description: "Successful operation"
           content:
             application/json:
@@ -60,7 +60,7 @@ paths:
                     type: "string"
                   acknowledged:
                     type: "boolean"
-        201:
+        400:
           description: "Could not create Collection due to unknown documents"
           content:
             application/json:
@@ -126,7 +126,7 @@ paths:
             schema:
               $ref: "#/components/schemas/Collection"
       responses:
-        200:
+        201:
           description: "Successful operation"
           content:
             application/json:
@@ -139,7 +139,7 @@ paths:
                     type: "string"
                   acknowledged:
                     type: "boolean"
-        201:
+        400:
           description: "Could not create collection due to unknown documents"
           content:
             application/json:
@@ -173,7 +173,7 @@ paths:
         schema:
           type: "string"
       responses:
-        200:
+        202:
           description: "successful operation"
           content:
             application/json:
