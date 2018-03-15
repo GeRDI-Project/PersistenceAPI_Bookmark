@@ -9,7 +9,7 @@ info:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 paths:
-  /{userId}:
+  /api/v1/collections/{userId}:
     get:
       summary: "Get Collections"
       description: "Returns a list of Collections owned by the user"
@@ -76,7 +76,7 @@ paths:
                   acknowledged:
                     type: "boolean"
                     default: false
-  /{userId}/{collectionId}:
+  /api/v1/collections/{userId}/{collectionId}:
     get:
       summary: "Get metadata documents"
       description: "Returns a Collection, containing its list of metadata documents."
