@@ -16,7 +16,7 @@ schemes:
 paths:
   /{userId}:
     get:
-      summary: "Get collections"
+      summary: "Get Collections"
       description: "Returns a list of Collections owned by the user"
       operationId: "getCollectionsByUserId"
       produces:
@@ -29,12 +29,12 @@ paths:
         type: "string"
       responses:
         200:
-          description: "successful operation"
+          description: "Successful operation"
           schema:
             $ref: "#/definitions/Collections"
     post:
-      summary: "Create new collection"
-      description: "Creates a new collection for the given user."
+      summary: "Create new Collection"
+      description: "Creates a new Collection for the given user."
       operationId: "createCollection"
       produces:
       - "application/json"
@@ -63,7 +63,7 @@ paths:
               acknowledged:
                 type: "boolean"
         400:
-          description: "Could not create collection due to unknown documents"
+          description: "Could not create Collection due to unknown documents"
           schema:
             type: "object"
             properties:
@@ -78,8 +78,8 @@ paths:
                 default: false
   /{userId}/{collectionId}:
     get:
-      summary: "Get collections"
-      description: "Returns a list of Collections owned by the user"
+      summary: "Get metadata documents"
+      description: "Returns a Collection, containing its list of metadata documents."
       operationId: "getCollectionById"
       produces:
       - "application/json"
@@ -91,17 +91,17 @@ paths:
         type: "string"
       - name: "collectionId"
         in: "path"
-        description: "The collection's unique identifier."
+        description: "The Collection's unique identifier."
         required: true
         type: "string"
       responses:
         200:
-          description: "successful operation"
+          description: "Successful operation"
           schema:
             $ref: "#/definitions/MetadataList"
     put:
-      summary: "Create or update collection"
-      description: "Creates or updates a  collection for the given user with the given collection id."
+      summary: "Create or update a Collection"
+      description: "Creates or updates a Collection for the given user with the given collection id. Should be used for updates only!"
       operationId: "updateCollection"
       produces:
       - "application/json"
@@ -135,7 +135,7 @@ paths:
               acknowledged:
                 type: "boolean"
         400:
-          description: "Could not create collection due to unknown documents"
+          description: "Could not create Collection due to unknown documents"
           schema:
             type: "object"
             properties:
@@ -149,8 +149,8 @@ paths:
                 type: "boolean"
                 default: false
     delete:
-      summary: "Delete given collections"
-      description: "Deletes the given collections owned by the specified user."
+      summary: "Delete given Collection"
+      description: "Deletes the given Collection owned by the specified user."
       operationId: "deleteCollection"
       produces:
       - "application/json"
@@ -167,7 +167,7 @@ paths:
         type: "string"
       responses:
         202:
-          description: "successful operation"
+          description: "Successful operation"
           schema:
               type: "object"
               properties:

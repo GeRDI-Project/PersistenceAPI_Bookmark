@@ -78,8 +78,8 @@ paths:
                     default: false
   /{userId}/{collectionId}:
     get:
-      summary: "Get Metadata documents"
-      description: "Returns a Collection, containing the list of metadata documents."
+      summary: "Get metadata documents"
+      description: "Returns a Collection, containing its list of metadata documents."
       operationId: "getCollectionById"
       parameters:
       - name: "userId"
@@ -90,20 +90,20 @@ paths:
           type: "string"
       - name: "collectionId"
         in: "path"
-        description: "The collection's unique identifier."
+        description: "The Collection's unique identifier."
         required: true
         schema:
           type: "string"
       responses:
         200:
-          description: "successful operation"
+          description: "Successful operation"
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/MetadataList"
     put:
-      summary: "Create or update collection"
-      description: "Creates or updates a  collection for the given user with the given collection id. Should be used"
+      summary: "Create or update a Collection"
+      description: "Creates or updates a Collection for the given user with the given collection id. Should be used for updates only!"
       operationId: "updateCollection"
       parameters:
       - name: "userId"
@@ -140,7 +140,7 @@ paths:
                   acknowledged:
                     type: "boolean"
         400:
-          description: "Could not create collection due to unknown documents"
+          description: "Could not create Collection due to unknown documents"
           content:
             application/json:
               schema:
@@ -156,8 +156,8 @@ paths:
                     type: "boolean"
                     default: false
     delete:
-      summary: "Delete given collections"
-      description: "Deletes the given collections owned by the specified user."
+      summary: "Delete given Collection"
+      description: "Deletes the given Collection owned by the specified user."
       operationId: "deleteCollection"
       parameters:
       - name: "userId"
@@ -174,7 +174,7 @@ paths:
           type: "string"
       responses:
         202:
-          description: "successful operation"
+          description: "Successful operation"
           content:
             application/json:
               schema:
