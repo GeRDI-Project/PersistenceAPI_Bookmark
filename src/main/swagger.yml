@@ -1,0 +1,205 @@
+swagger: "2.0"
+info:
+  description: "This services provides persistance capabilities for GeRDI Bookmark Collections through basic CRUD operations."
+  version: "1.0.0"
+  title: "Bookmark Persistance API"
+  contact:
+    email: "ntd@informatik.uni-kiel.de"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "bookmark.gerdi.org"
+basePath: "/api/v1/collections"
+schemes:
+- "http"
+- "https"
+paths:
+  /{userId}:
+    get:
+      summary: "Get collections"
+      description: "Returns a list of Collections owned by the user"
+      operationId: "getCollectionsByUserId"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "The user's unique identifier."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Collections"
+    post:
+      summary: "Create new collection"
+      description: "Creates a new collection for the given user."
+      operationId: "createCollection"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "The user's unique identifier."
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Collection with a name and a list of document ids."
+        required: true
+        schema:
+          $ref: "#/definitions/Collection"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+              collectionId:
+                type: "string"
+              acknowledged:
+                type: "boolean"
+        201:
+          description: "Could not create collection due to unknown documents"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+              docs:
+                type: "array"
+                items:
+                  type: "string"
+              acknowledged:
+                type: "boolean"
+                default: false
+  /{userId}/{collectionId}:
+    get:
+      summary: "Get collections"
+      description: "Returns a list of Collections owned by the user"
+      operationId: "getCollectionById"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "The user's unique identifier."
+        required: true
+        type: "string"
+      - name: "collectionId"
+        in: "path"
+        description: "The collection's unique identifier."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/MetadataList"
+    put:
+      summary: "Create or update collection"
+      description: "Creates or updates a  collection for the given user with the given collection id."
+      operationId: "updateCollection"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "The user's unique identifier."
+        required: true
+        type: "string"
+      - name: "collectionId"
+        in: "path"
+        description: "The collection's unique identifier."
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Collection with a name and a list of document ids."
+        required: true
+        schema:
+          $ref: "#/definitions/Collection"
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+              collectionId:
+                type: "string"
+              acknowledged:
+                type: "boolean"
+        201:
+          description: "Could not create collection due to unknown documents"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+              docs:
+                type: "array"
+                items:
+                  type: "string"
+              acknowledged:
+                type: "boolean"
+                default: false
+    delete:
+      summary: "Delete given collections"
+      description: "Deletes the given collections owned by the specified user."
+      operationId: "deleteCollection"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        description: "The user's unique identifier."
+        required: true
+        type: "string"
+      - name: "collectionId"
+        in: "path"
+        description: "The collection's unique identifier."
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+              type: "object"
+              properties:
+                acknowledged:
+                  type: "boolean"
+definitions:
+  MetadataList:
+    type: "array"
+    items:
+      type: "object"
+      properties:
+        _source:
+          type: "object"
+        _id:
+          type: "string"
+  Collections:
+    type: "array"
+    items:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        _id:
+          type: "string"
+  Collection:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+      docs:
+        type: "array"
+        items:
+          type: "string"
+    required:
+      - "docs"
