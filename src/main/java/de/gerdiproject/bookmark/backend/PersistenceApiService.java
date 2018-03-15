@@ -55,7 +55,6 @@ public final class PersistenceApiService
     {
     }
 
-    @SuppressWarnings("resource")
     public static void main(final String[] args)
     {
 
@@ -73,6 +72,17 @@ public final class PersistenceApiService
                 BookmarkPersistenceConstants.MONGO_DB_CREDENTIAL,
                 MongoClientOptions.builder().build());
         }
+
+        // Release resource
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                // Exception case is ignored because this is only executed if
+                // the program exits
+                LOGGER.info("Closing MongoDB client resources");
+                mongoClient.close();
+            }
+        });
         final MongoDatabase database = mongoClient
                                        .getDatabase(BookmarkPersistenceConstants.MONGO_DB_DB_NAME);
         try {
