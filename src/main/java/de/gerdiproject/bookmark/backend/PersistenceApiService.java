@@ -79,7 +79,6 @@ public final class PersistenceApiService
             public void run() {
                 // Exception case is ignored because this is only executed if
                 // the program exits
-                LOGGER.info("Closing MongoDB client resources");
                 mongoClient.close();
             }
         });
