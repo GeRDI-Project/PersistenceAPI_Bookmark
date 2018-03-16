@@ -14,7 +14,7 @@
 ---
 swagger: "2.0"
 info:
-  description: "This services provides persistance capabilities for GeRDI Bookmark Collections through basic CRUD operations."
+  description: "This service provides persistance capabilities for GeRDI Bookmark Collections through basic CRUD operations."
   version: "1.0.0"
   title: "Bookmark Persistance API"
   contact:
@@ -31,7 +31,7 @@ paths:
   /{userId}:
     get:
       summary: "Get Collections"
-      description: "Returns a list of Collections owned by the user"
+      description: "Returns a list of Collections owned by the user."
       operationId: "getCollectionsByUserId"
       produces:
       - "application/json"
@@ -77,7 +77,7 @@ paths:
               acknowledged:
                 type: "boolean"
         400:
-          description: "Could not create Collection due to unknown documents"
+          description: "Could not create Collection due to unknown documents."
           schema:
             type: "object"
             properties:
@@ -149,7 +149,7 @@ paths:
               acknowledged:
                 type: "boolean"
         400:
-          description: "Could not create Collection due to unknown documents"
+          description: "Could not create Collection due to unknown documents."
           schema:
             type: "object"
             properties:
