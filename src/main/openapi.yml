@@ -41,7 +41,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Collections"
+                $ref: "#/components/schemas/CollectionsResponse"
     post:
       summary: "Create new Collection"
       description: "Creates a new Collection for the given user."
@@ -59,37 +59,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/definitions/Collection"
+              $ref: "#/components/schemas/CollectionRequest"
       responses:
         201:
           description: "Successful operation"
           content:
             application/json:
               schema:
-                type: "object"
-                properties:
-                  message:
-                    type: "string"
-                  collectionId:
-                    type: "string"
-                  acknowledged:
-                    type: "boolean"
+                $ref: "#/components/schemas/CreationSuccessfulResponse"
         400:
           description: "Could not create Collection due to unknown documents."
           content:
             application/json:
               schema:
-                type: "object"
-                properties:
-                  message:
-                    type: "string"
-                  docs:
-                    type: "array"
-                    items:
-                      type: "string"
-                  acknowledged:
-                    type: "boolean"
-                    default: false
+                $ref: "#/components/schemas/CreationFailedResponse"
   /api/v1/collections/{userId}/{collectionId}:
     get:
       summary: "Get metadata documents"
@@ -138,37 +121,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Collection"
+              $ref: "#/components/schemas/CollectionRequest"
       responses:
         201:
           description: "Successful operation"
           content:
             application/json:
               schema:
-                type: "object"
-                properties:
-                  message:
-                    type: "string"
-                  collectionId:
-                    type: "string"
-                  acknowledged:
-                    type: "boolean"
+                $ref: "#/components/schemas/CreationSuccessfulResponse"
         400:
           description: "Could not create Collection due to unknown documents."
           content:
             application/json:
               schema:
-                type: "object"
-                properties:
-                  message:
-                    type: "string"
-                  docs:
-                    type: "array"
-                    items:
-                      type: "string"
-                  acknowledged:
-                    type: "boolean"
-                    default: false
+                $ref: "#/components/schemas/CreationFailedResponse"
     delete:
       summary: "Delete given Collection"
       description: "Deletes the given Collection owned by the specified user."
@@ -192,12 +158,45 @@ paths:
           content:
             application/json:
               schema:
-                type: "object"
-                properties:
-                  acknowledged:
-                    type: "boolean"
+                $ref: "#/components/schemas/DeletionResponse"
 components:
   schemas:
+    CreationSuccessfulResponse:
+      type: "object"
+      properties:
+        message:
+          type: "string"
+        collectionId:
+          type: "string"
+        acknowledged:
+          type: "boolean"
+      required:
+        - "message"
+        - "collectionId"
+        - "acknowledged"
+    CreationFailedResponse:
+      type: "object"
+      properties:
+        message:
+          type: "string"
+        docs:
+          type: "array"
+          items:
+            type: "string"
+        acknowledged:
+          type: "boolean"
+          default: false
+      required:
+        - "message"
+        - "docs"
+        - "acknowledged"
+    DeletionResponse:
+      type: "object"
+      properties:
+        acknowledged:
+          type: "boolean"
+      required:
+        - "acknowledged"
     MetadataList:
       type: "array"
       items:
@@ -207,7 +206,10 @@ components:
             type: "object"
           _id:
             type: "string"
-    Collections:
+        required:
+          - "_id"
+          - "_source"
+    CollectionsResponse:
       type: "array"
       items:
         type: "object"
@@ -216,7 +218,9 @@ components:
             type: "string"
           _id:
             type: "string"
-    Collection:
+        required:
+          - "_id"
+    CollectionRequest:
       type: "object"
       properties:
         name:
