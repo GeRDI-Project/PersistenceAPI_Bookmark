@@ -45,7 +45,7 @@ paths:
         200:
           description: "Successful operation"
           schema:
-            $ref: "#/definitions/Collections"
+            $ref: "#/definitions/CollectionsResponse"
     post:
       summary: "Create new Collection"
       description: "Creates a new Collection for the given user."
@@ -63,33 +63,16 @@ paths:
         description: "Collection with a name and a list of document ids."
         required: true
         schema:
-          $ref: "#/definitions/Collection"
+          $ref: "#/definitions/CollectionRequest"
       responses:
         201:
           description: "Successful operation"
           schema:
-            type: "object"
-            properties:
-              message:
-                type: "string"
-              collectionId:
-                type: "string"
-              acknowledged:
-                type: "boolean"
+            $ref: "#/definitions/CreationSuccessfulResponse"
         400:
           description: "Could not create Collection due to unknown documents."
           schema:
-            type: "object"
-            properties:
-              message:
-                type: "string"
-              docs:
-                type: "array"
-                items:
-                  type: "string"
-              acknowledged:
-                type: "boolean"
-                default: false
+            $ref: "#/definitions/CreationFailedResponse"
   /{userId}/{collectionId}:
     get:
       summary: "Get metadata documents"
@@ -112,7 +95,7 @@ paths:
         200:
           description: "Successful operation"
           schema:
-            $ref: "#/definitions/MetadataList"
+            $ref: "#/definitions/MetadataListResponse"
     put:
       summary: "Create or update a Collection"
       description: "Creates or updates a Collection for the given user with the given collection id. Should be used for updates only!"
@@ -135,33 +118,16 @@ paths:
         description: "Collection with a name and a list of document ids."
         required: true
         schema:
-          $ref: "#/definitions/Collection"
+          $ref: "#/definitions/CollectionRequest"
       responses:
         201:
           description: "Successful operation"
           schema:
-            type: "object"
-            properties:
-              message:
-                type: "string"
-              collectionId:
-                type: "string"
-              acknowledged:
-                type: "boolean"
+            $ref: "#/definitions/CreationSuccessfulResponse"
         400:
           description: "Could not create Collection due to unknown documents."
           schema:
-            type: "object"
-            properties:
-              message:
-                type: "string"
-              docs:
-                type: "array"
-                items:
-                  type: "string"
-              acknowledged:
-                type: "boolean"
-                default: false
+            $ref: "#/definitions/CreationFailedResponse"
     delete:
       summary: "Delete given Collection"
       description: "Deletes the given Collection owned by the specified user."
@@ -183,12 +149,45 @@ paths:
         202:
           description: "Successful operation"
           schema:
-              type: "object"
-              properties:
-                acknowledged:
-                  type: "boolean"
+              $ref: "#/definitions/DeletionResponse"
 definitions:
-  MetadataList:
+  CreationSuccessfulResponse:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+      collectionId:
+        type: "string"
+      acknowledged:
+        type: "boolean"
+    required:
+      - "message"
+      - "collectionId"
+      - "acknowledged"
+  CreationFailedResponse:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+      docs:
+        type: "array"
+        items:
+          type: "string"
+      acknowledged:
+        type: "boolean"
+        default: false
+    required:
+      - "message"
+      - "docs"
+      - "acknowledged"
+  DeletionResponse:
+    type: "object"
+    properties:
+      acknowledged:
+        type: "boolean"
+    required:
+      - "acknowledged"
+  MetadataListResponse:
     type: "array"
     items:
       type: "object"
@@ -197,7 +196,10 @@ definitions:
           type: "object"
         _id:
           type: "string"
-  Collections:
+      required:
+        - "_id"
+        - "_source"
+  CollectionsResponse:
     type: "array"
     items:
       type: "object"
@@ -206,7 +208,9 @@ definitions:
           type: "string"
         _id:
           type: "string"
-  Collection:
+      required:
+        - "_id"
+  CollectionRequest:
     type: "object"
     properties:
       name:
