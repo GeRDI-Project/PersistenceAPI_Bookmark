@@ -75,8 +75,8 @@ public class PostCollection extends AbstractBookmarkRoute
     throws IOException
     {
         response.type(BookmarkPersistenceConstants.APPLICATION_JSON);
-        if (request
-            .contentType() != BookmarkPersistenceConstants.APPLICATION_JSON)
+        if (!request
+            .contentType().startsWith(BookmarkPersistenceConstants.APPLICATION_JSON))
             halt(405);
         final String userId = request
                               .params(BookmarkPersistenceConstants.PARAM_USER_ID_NAME);
