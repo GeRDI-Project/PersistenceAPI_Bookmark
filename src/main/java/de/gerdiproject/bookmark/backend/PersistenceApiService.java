@@ -15,12 +15,6 @@
  */
 package de.gerdiproject.bookmark.backend;
 
-import static spark.Spark.delete;
-import static spark.Spark.get;
-import static spark.Spark.port;
-import static spark.Spark.post;
-import static spark.Spark.put;
-
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +31,8 @@ import de.gerdiproject.bookmark.backend.route.GetCollections;
 import de.gerdiproject.bookmark.backend.route.GetDocuments;
 import de.gerdiproject.bookmark.backend.route.PostCollection;
 import de.gerdiproject.bookmark.backend.route.PutCollection;
+
+import static spark.Spark.*;
 
 /**
  * This class initializes the involved middleware and all REST paths.
@@ -98,6 +94,13 @@ public final class PersistenceApiService
 
         // Init SparkJava
         port(4567);
+
+        // Ignore trailing sla shes
+        before((req, res) -> {
+            String path = req.pathInfo();
+            if (path.endsWith("/"))
+                res.redirect(path.substring(0, path.length() - 1));
+        });
 
         // Just to make the code below shorter
         final String paramCollName = BookmarkPersistenceConstants.PARAM_COLLECTION_NAME;
