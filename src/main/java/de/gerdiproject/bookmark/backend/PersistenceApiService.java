@@ -95,7 +95,7 @@ public final class PersistenceApiService
         // Init SparkJava
         port(4567);
 
-        // Ignore trailing sla shes
+        // Ignore trailing slashes
         before((req, res) -> {
             String path = req.pathInfo();
             if (path.endsWith("/"))
