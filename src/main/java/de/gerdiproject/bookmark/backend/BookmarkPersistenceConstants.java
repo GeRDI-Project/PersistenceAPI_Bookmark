@@ -75,7 +75,6 @@ public final class BookmarkPersistenceConstants
     public static final String DB_UID_FIELD_NAME = "_id";
 
     // Param Constants
-    public static final String PARAM_USER_ID_NAME = "userId";
     public static final String PARAM_COLLECTION_NAME = "collectionId";
 
     // Response Field Names
@@ -86,6 +85,10 @@ public final class BookmarkPersistenceConstants
     // Request Field Names
     public static final String REQUEST_DOCS_FIELD_NAME = "docs";
     public static final String REQUEST_NAME_FIELD_NAME = "name";
+
+    // OpenID Infos
+    public static final String OPENID_JWK_ENDPOINT = System.getenv()
+            .getOrDefault("OPENID_JWK_ENDPOINT", "http://keycloak-http.default.svc.cluster.local/admin/auth/realms/master/protocol/openid-connect/certs");
 
     private BookmarkPersistenceConstants()
     {

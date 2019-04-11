@@ -72,8 +72,7 @@ public final class PutCollection extends AbstractBookmarkRoute
                 .contentType().startsWith(BookmarkPersistenceConstants.APPLICATION_JSON))
         halt(405);
 
-        final String userId = request
-                              .params(BookmarkPersistenceConstants.PARAM_USER_ID_NAME);
+        final String userId = getProfileSubject(request, response);
         final String collectionId = request
                                     .params(BookmarkPersistenceConstants.PARAM_COLLECTION_NAME);
 

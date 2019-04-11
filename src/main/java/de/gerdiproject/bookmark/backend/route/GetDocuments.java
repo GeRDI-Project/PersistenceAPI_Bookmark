@@ -60,8 +60,7 @@ public final class GetDocuments extends AbstractBookmarkRoute
     throws IOException
     {
         response.type(BookmarkPersistenceConstants.APPLICATION_JSON);
-        final String userId = request
-                              .params(BookmarkPersistenceConstants.PARAM_USER_ID_NAME);
+        final String userId = getProfileSubject(request, response);
         final String collectionId = request
                                     .params(BookmarkPersistenceConstants.PARAM_COLLECTION_NAME);
 
