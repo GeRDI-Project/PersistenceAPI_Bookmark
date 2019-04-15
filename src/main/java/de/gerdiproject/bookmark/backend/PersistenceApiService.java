@@ -15,7 +15,10 @@
  */
 package de.gerdiproject.bookmark.backend;
 
+import de.gerdiproject.bookmark.backend.pac4j.GerdiConfigFactory;
 import org.bson.Document;
+import org.pac4j.core.config.Config;
+import org.pac4j.sparkjava.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,34 +98,38 @@ public final class PersistenceApiService
         // Init SparkJava
         port(4567);
 
-        // Ignore trailing slashes
+        // Build the security filter
+        final Config config = new GerdiConfigFactory().build();
+        final SecurityFilter secFilter = new SecurityFilter(config, "DirectBearerAuthClient");
+
+        // Ignore trailing slashes and add security check for JWT
         before((req, res) -> {
             String path = req.pathInfo();
             if (path.endsWith("/"))
                 res.redirect(path.substring(0, path.length() - 1));
+            secFilter.handle(req, res);
         });
 
         // Just to make the code below shorter
         final String paramCollName = BookmarkPersistenceConstants.PARAM_COLLECTION_NAME;
-        final String paramUserId = BookmarkPersistenceConstants.PARAM_USER_ID_NAME;
         final String pathPrefix = BookmarkPersistenceConstants.PATH_PREFIX;
 
         // GET a list of collections of a specific user
-        get(pathPrefix + "/:" + paramUserId, new GetCollections(collection));
+        get(pathPrefix , new GetCollections(collection));
 
         // GET all documents within a collection
-        get(pathPrefix + "/:" + paramUserId + "/:" + paramCollName,
+        get(pathPrefix + "/:" + paramCollName,
             new GetDocuments(collection));
 
         // Create a new collection
-        post(pathPrefix + "/:" + paramUserId, new PostCollection(collection));
+        post(pathPrefix, new PostCollection(collection));
 
         // Update a collection
-        put(pathPrefix + "/:" + paramUserId + "/:" + paramCollName,
+        put(pathPrefix + "/:" + paramCollName,
             new PutCollection(collection));
 
         // DELETE a collection
-        delete (pathPrefix + "/:" + paramUserId + "/:" + paramCollName,
+        delete (pathPrefix + "/:" + paramCollName,
                 new DeleteCollection(collection));
 
     }

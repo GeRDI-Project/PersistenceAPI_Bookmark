@@ -20,7 +20,16 @@ import org.bson.Document;
 import com.google.gson.Gson;
 import com.mongodb.client.MongoCollection;
 
+import org.pac4j.core.context.WebContext;
+import org.pac4j.core.profile.CommonProfile;
+import org.pac4j.core.profile.ProfileManager;
+import org.pac4j.jwt.profile.JwtProfile;
+import org.pac4j.sparkjava.SparkWebContext;
+import spark.Request;
+import spark.Response;
 import spark.Route;
+
+import java.util.Optional;
 
 /**
  * This abstract class introduces a minimal framework for the needed routes.
@@ -44,6 +53,18 @@ public abstract class AbstractBookmarkRoute implements Route
     protected AbstractBookmarkRoute(final MongoCollection<Document> collection)
     {
         this.collection = collection;
+    }
+
+    protected final JwtProfile getUserProfile(Request req, Response res) {
+        WebContext context = new SparkWebContext(req, res);
+        ProfileManager manager = new ProfileManager(context);
+        Optional<CommonProfile> profile = manager.get(true);
+        JwtProfile jwtProfile = (JwtProfile) profile.get();
+        return jwtProfile;
+    }
+
+    protected final String getProfileSubject(Request req, Response res){
+        return getUserProfile(req, res).getSubject();
     }
 
 }

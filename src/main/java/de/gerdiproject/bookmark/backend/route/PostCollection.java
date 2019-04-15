@@ -78,8 +78,7 @@ public class PostCollection extends AbstractBookmarkRoute
         if (!request
             .contentType().startsWith(BookmarkPersistenceConstants.APPLICATION_JSON))
             halt(405);
-        final String userId = request
-                              .params(BookmarkPersistenceConstants.PARAM_USER_ID_NAME);
+        final String userId = getProfileSubject(request, response);
         final JsonElement requestBody = new JsonParser().parse(request.body());
 
         String collectionName = "";

@@ -54,8 +54,7 @@ public class GetCollections extends AbstractBookmarkRoute
     public Object handle(final Request request, final Response response)
     {
         response.type(BookmarkPersistenceConstants.APPLICATION_JSON);
-        final String userId = request
-                              .params(BookmarkPersistenceConstants.PARAM_USER_ID_NAME);
+        final String userId = getProfileSubject(request, response);
 
         final BasicDBObject query = new BasicDBObject(
             BookmarkPersistenceConstants.DB_USER_ID_FIELD_NAME, userId);
