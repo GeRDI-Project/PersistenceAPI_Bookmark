@@ -55,8 +55,6 @@ public final class BookmarkPersistenceConstants
                                             .getOrDefault("GERDI_ES_HOSTNAME", "localhost");
     static final String GERDI_ES_INDEXNAME = System.getenv()
                                              .getOrDefault("GERDI_ES_INDEXNAME", "gerdi");
-    static final String GERDI_ES_TYPENAME = System.getenv()
-                                            .getOrDefault("GERDI_ES_TYPENAME", "metadata");
     static final int GERDI_ES_PORT = Integer
                                      .parseInt(System.getenv().getOrDefault("GERDI_ES_PORT", "9200"));
     static final RestHighLevelClient ES_CLIENT = new RestHighLevelClient(

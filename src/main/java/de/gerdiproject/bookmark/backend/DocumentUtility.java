@@ -21,6 +21,7 @@ import java.util.List;
 import org.bson.Document;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.client.RequestOptions;
 
 /**
  * A utility class for document retrieval.
@@ -48,9 +49,8 @@ public final class DocumentUtility
     throws IOException
     {
         final GetRequest getRequest = new GetRequest(
-            BookmarkPersistenceConstants.GERDI_ES_INDEXNAME,
-            BookmarkPersistenceConstants.GERDI_ES_TYPENAME, docId);
-        return BookmarkPersistenceConstants.ES_CLIENT.get(getRequest)
+            BookmarkPersistenceConstants.GERDI_ES_INDEXNAME, docId);
+        return BookmarkPersistenceConstants.ES_CLIENT.get(getRequest, RequestOptions.DEFAULT)
                .isExists();
     }
 
@@ -68,10 +68,9 @@ public final class DocumentUtility
     throws IOException
     {
         final GetRequest getRequest = new GetRequest(
-            BookmarkPersistenceConstants.GERDI_ES_INDEXNAME,
-            BookmarkPersistenceConstants.GERDI_ES_TYPENAME, docId);
+            BookmarkPersistenceConstants.GERDI_ES_INDEXNAME, docId);
         final GetResponse getResponse = BookmarkPersistenceConstants.ES_CLIENT
-                                        .get(getRequest);
+                                        .get(getRequest, RequestOptions.DEFAULT);
         return new BookmarkDocument(docId, getResponse.getSource());
     }
 
